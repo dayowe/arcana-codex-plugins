@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, run a readiness or ambiguity audit, choose the next implementation chunk, write an implementer prompt, review staged or supplied diffs against frozen docs, clarify contracts, control scope, or define the next handoff. Do not use for direct implementation unless the user explicitly asks the planner to implement.
+description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, run a readiness or ambiguity audit, choose the next implementation chunk, write an implementer or orchestrator handoff prompt, review staged or supplied diffs against frozen docs, clarify contracts, control scope, or define the next handoff. Do not use for direct implementation unless the user explicitly asks the planner to implement.
 ---
 
 # Planner
@@ -38,6 +38,7 @@ For planner/reviewer tasks, prefer a task packet containing:
 - current ground truth, such as plan, checklist, prompt map, recent review notes, or git verification notes
 - requested action: write next implementer prompt, review staged diff, clarify docs, update prompt map, prepare checklist, or similar
 - output path, when saving an official artifact is requested or expected
+- commit policy, when writing an orchestrator handoff prompt
 
 If a path, contract, data source, diff target, or output location is required and cannot be discovered safely, stop and ask for the exact missing information. Do not guess.
 
@@ -236,6 +237,44 @@ In the final summary, include a contract verification matrix and explicitly conf
 End implementer prompts by asking for a proposed commit message. When a chunk ID exists, require the commit message to start with that chunk ID prefix.
 
 When the user asks the planner for a commit message, output a one-line commit message. If multiple sentence-like clauses are needed, separate them with semicolons.
+
+## Orchestrator Handoff Prompts
+
+When asked to write, produce, or prepare an orchestrator prompt, treat it as an official durable handoff artifact, not casual chat output.
+
+Save official orchestration handoff prompts beside the plan/checklist/prompt map unless the user explicitly asks for chat-only output or gives another path. If no output path is clear, ask for the output path before presenting chat-only. Re-read the saved file before finishing.
+
+Every orchestrator prompt must include:
+
+- repo root
+- feature/fix name or slug
+- plan path
+- implementation checklist path
+- prompt map path
+- readiness audit path or permission to create/update one beside the plan/checklist
+- prompt output directory or naming convention
+- validation expectations
+- commit policy
+- stopping conditions
+
+The commit policy must be explicit and must use one of:
+
+- `authorized-for-accepted-chunks`
+- `ask-before-each-commit`
+- `do-not-commit`
+
+If the user has not specified commit behavior and no project/workflow default exists, stop and ask before saving the prompt. Do not silently choose `do-not-commit`, `ask-before-each-commit`, or `authorized-for-accepted-chunks`.
+
+If the user says to orchestrate implementation and their stated workflow preference says the orchestrator should commit accepted chunks, use `authorized-for-accepted-chunks` and include this exact policy text:
+
+```text
+Commit policy:
+Commits are authorized for accepted chunks only. Commit after each accepted chunk once review and required validation pass. Do not commit unrelated dirty changes. Use one-line commit messages with the chunk ID prefix when one exists.
+```
+
+For `ask-before-each-commit`, require the orchestrator to stop after each accepted chunk and ask before committing.
+
+For `do-not-commit`, require the orchestrator to avoid commits and report the proposed one-line commit message for each accepted chunk.
 
 ## Prompt Output Hygiene
 

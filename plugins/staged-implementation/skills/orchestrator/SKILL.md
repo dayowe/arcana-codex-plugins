@@ -26,10 +26,11 @@ Prefer a task packet containing:
 - readiness audit path or permission to create/update one beside the plan/checklist
 - prompt output directory or naming convention
 - validation expectations
-- whether commits are authorized
+- commit policy: `authorized-for-accepted-chunks`, `ask-before-each-commit`, or `do-not-commit`
 - stopping conditions
 
 If any required path, contract, data source, validation target, or output location is unclear, stop and ask. Do not guess.
+If commit policy is missing or not one of the supported values, stop and ask. Do not silently choose a safer or more aggressive default.
 
 ## Authority Boundaries
 
@@ -37,7 +38,7 @@ If any required path, contract, data source, validation target, or output locati
 - Implementer sub-agents own one scoped implementation pass at a time.
 - Implementer sub-agents must not commit.
 - Validator sub-agents or validator passes gather evidence only; they do not decide final acceptance.
-- Commit only when the user explicitly authorizes committing accepted chunks.
+- Commit only according to the explicit commit policy.
 - Do not push, reset, discard, or revert unrelated changes unless explicitly asked.
 - Stop on contract ambiguity instead of pushing an implementer to guess.
 
@@ -94,7 +95,7 @@ For each authorized ready chunk:
 8. Accept the chunk.
    - Confirm required validation passed or that the user accepted the validation gap.
    - Confirm no out-of-scope work remains.
-   - Commit only if the user authorized commits.
+   - Apply the explicit commit policy.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
 
 9. Continue.
@@ -226,7 +227,30 @@ If there are no findings, state an acceptable verdict clearly before summaries.
 
 ## Commit Rules
 
-Commit accepted chunks only when the user has explicitly authorized commits for the run.
+Commit behavior is controlled only by the explicit commit policy. Supported policies are:
+
+- `authorized-for-accepted-chunks`
+- `ask-before-each-commit`
+- `do-not-commit`
+
+If the commit policy is missing, stop and ask before starting implementation. Do not infer commit behavior from general intent.
+
+For `authorized-for-accepted-chunks`:
+
+- commit after each accepted chunk once review and required validation pass
+- never commit unrelated dirty changes
+- use one-line commit messages with the chunk ID prefix when one exists
+
+For `ask-before-each-commit`:
+
+- stop after each accepted chunk
+- report the proposed one-line commit message
+- ask the user before committing
+
+For `do-not-commit`:
+
+- do not commit
+- report the proposed one-line commit message for each accepted chunk
 
 Before committing:
 
@@ -244,12 +268,15 @@ Do not commit if:
 - a contract ambiguity is unresolved
 - required validation failed or could not run
 - unrelated dirty changes cannot be separated safely
-- the user did not authorize commits
+- the commit policy is `do-not-commit`
+- the commit policy is `ask-before-each-commit` and the user has not approved that specific commit
+- the commit policy is missing or unsupported
 
 ## Stopping Conditions
 
 Stop and report clearly when:
 
+- commit policy is missing or unsupported
 - a contract, symbol, endpoint, data source, or output path is ambiguous
 - the plan/checklist/prompt map disagree and the correct contract cannot be inferred from written docs
 - the readiness audit has unresolved `blocked-by-contract-decision` items and the user has not authorized a ready-subset run
