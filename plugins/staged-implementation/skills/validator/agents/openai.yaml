@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validator"
+  short_description: "Validate implemented behavior with evidence"
+  default_prompt: "Use $validator to verify this implemented behavior against the frozen plan, prompt, and checklist."

@@ -1,0 +1,20 @@
+{
+  "name": "arcana-codex-plugins",
+  "interface": {
+    "displayName": "Arcana Codex Plugins"
+  },
+  "plugins": [
+    {
+      "name": "staged-implementation",
+      "source": {
+        "source": "local",
+        "path": "./plugins/staged-implementation"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

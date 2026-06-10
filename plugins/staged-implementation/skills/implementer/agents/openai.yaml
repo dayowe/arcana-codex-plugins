@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementer"
+  short_description: "Execute one scoped implementation chunk"
+  default_prompt: "Use $implementer to execute this saved implementation prompt exactly."

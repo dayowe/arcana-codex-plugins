@@ -1,0 +1,4 @@
+interface:
+  display_name: "Planner"
+  short_description: "Plan, prompt, and review implementation chunks"
+  default_prompt: "Use $planner to write the next implementer prompt for this staged implementation."
