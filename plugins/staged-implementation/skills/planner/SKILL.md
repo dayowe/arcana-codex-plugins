@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, choose the next implementation chunk, write an implementer prompt, review staged or supplied diffs against frozen docs, clarify contracts, control scope, or define the next handoff. Do not use for direct implementation unless the user explicitly asks the planner to implement.
+description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, run a readiness or ambiguity audit, choose the next implementation chunk, write an implementer prompt, review staged or supplied diffs against frozen docs, clarify contracts, control scope, or define the next handoff. Do not use for direct implementation unless the user explicitly asks the planner to implement.
 ---
 
 # Planner
@@ -51,28 +51,37 @@ If a path, contract, data source, diff target, or output location is required an
    - Split work into gates or chunks.
    - Keep the checklist operational, with exit criteria and validation surfaces, not aspirational.
 
-3. Choose the next chunk.
+3. Prepare or read the prompt map.
+   - Map gates/chunks to implementer prompt artifacts.
+   - Track readiness, sequencing, dependencies, and blocked chunks.
+
+4. Run the implementation readiness audit.
+   - Inspect every chunk in the plan, checklist, and prompt map.
+   - Surface contract blockers, dependencies, environment blockers, and small decisions that should be frozen before prompting.
+   - Do not write the first implementer prompt until contract blockers are resolved or the user explicitly authorizes starting only a ready subset.
+
+5. Choose the next chunk.
    - Pick one coherent behavioral, contract, or validation unit.
    - Prefer chunks that are independently reviewable and testable.
    - Define in-scope work, explicit non-goals, invariants, validation, and test posture.
 
-4. Write the implementer prompt.
+6. Write the implementer prompt.
    - Write one surgical prompt for the chosen chunk only.
    - Save official next-chunk prompts beside the companion plan/checklist unless the user explicitly asks for chat-only output or gives another path.
    - Do not save ad hoc follow-up/fix prompts unless explicitly asked.
    - Re-read any saved official prompt before finishing.
 
-5. Review implementation.
+7. Review implementation.
    - Inspect the actual diff target. Use `git diff --cached` for staged review unless the user asks for another target.
    - Compare the diff to frozen docs, the prompt, and scope boundaries.
    - Start with findings ordered by severity. If no findings exist, start with a clear acceptable verdict.
 
-6. Resolve ambiguity through docs.
+8. Resolve ambiguity through docs.
    - If docs allow multiple interpretations, identify the exact missing decision.
    - Clarify or request clarification before writing a fix prompt.
    - Do not leave important contract clarifications only in chat when docs should be updated.
 
-7. Define the next handoff.
+9. Define the next handoff.
    - Continue only after the current chunk is accepted, corrected, or blocked on a documented ambiguity.
 
 ## Chunk Sizing
@@ -136,6 +145,34 @@ When asked to write or update a prompt map, map checklist gates/chunks to implem
 
 Use the prompt map to preserve sequencing for the planner/reviewer. Do not include the prompt map in downstream implementer prompts by default unless the chosen chunk uses prompt-map readiness or may update the prompt map.
 
+## Readiness / Ambiguity Audit
+
+After the plan, implementation checklist, and prompt map exist, proactively audit all chunks before writing the first implementer prompt or starting orchestration. Do this even if the user asks generally whether implementation can begin.
+
+Classify every chunk as one of:
+
+- `ready`
+- `blocked-by-contract-decision`
+- `blocked-by-dependency`
+- `blocked-by-environment`
+- `needs-small-freeze-before-prompt`
+
+For every non-ready or weakly-ready chunk, produce a decision ledger entry with:
+
+- chunk ID/name
+- exact missing decision, dependency, or environment blocker
+- why the implementer must not decide it
+- recommended default when the written docs support one
+- options and tradeoffs when the user must decide
+- plan/checklist/prompt-map updates required after the decision
+
+Before implementation starts, require one of these outcomes:
+
+- all contract blockers and small freezes are resolved and written back into the plan/checklist/prompt map
+- or the user explicitly authorizes starting only the `ready` subset while blocked chunks remain held
+
+Do not treat dependency-pending chunks as contract-ambiguous unless a missing decision blocks their future prompt. Do not hide blockers inside the prompt map only; summarize them clearly for the user.
+
 ## Implementer Prompt Rules
 
 Before writing the prompt:
@@ -143,6 +180,8 @@ Before writing the prompt:
 - verify the correct next chunk from the checklist, prompt map, recent git history, and current worktree state when available
 - use `git status --short` and relevant `git log --oneline` checks before claiming a chunk is next, landed, or ready for review
 - state which chunk you chose and why
+- verify the readiness audit is complete, or complete it first
+- do not write the first implementer prompt if unresolved `blocked-by-contract-decision` or `needs-small-freeze-before-prompt` items affect the intended implementation path, unless the user explicitly authorized a ready-subset run
 - stop if an ambiguity blocks an implementer-quality prompt
 - include current-state context only to the extent needed for the implementer to execute the chunk without relying on prior chat memory
 

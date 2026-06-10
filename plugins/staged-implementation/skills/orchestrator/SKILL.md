@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: "End-to-end staged implementation orchestrator for any codebase. Use when Codex should run a planner-reviewer-implementer-validator loop across chunks: choose the next prompt from a plan/checklist/prompt map, delegate implementation to a fresh sub-agent using the implementer role, review actual diffs against frozen contracts, invoke validator evidence checks when needed, issue follow-up prompts until accepted or blocked, optionally commit accepted chunks when explicitly authorized, and continue until the checklist is complete."
+description: "End-to-end staged implementation orchestrator for any codebase. Use when Codex should run a planner-reviewer-implementer-validator loop across chunks: audit readiness and ambiguities before implementation, choose the next prompt from a plan/checklist/prompt map, delegate implementation to a fresh sub-agent using the implementer role, review actual diffs against frozen contracts, invoke validator evidence checks when needed, issue follow-up prompts until accepted or blocked, optionally commit accepted chunks when explicitly authorized, and continue until the checklist is complete."
 ---
 
 # Orchestrator
@@ -23,6 +23,7 @@ Prefer a task packet containing:
 - plan path
 - implementation checklist path
 - prompt map path
+- readiness audit path or permission to create/update one beside the plan/checklist
 - prompt output directory or naming convention
 - validation expectations
 - whether commits are authorized
@@ -42,55 +43,85 @@ If any required path, contract, data source, validation target, or output locati
 
 ## High-Level Loop
 
-For each ready chunk:
+Before delegating implementation, run a readiness preflight:
 
 1. Establish current state.
    - Read project instructions first.
    - Read the plan, checklist, prompt map, recent review notes, and relevant git/worktree state.
-   - Identify the next ready chunk from the checklist and prompt map.
+   - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
+   - Inspect every chunk and classify it as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`.
+   - Surface all contract blockers and small freezes to the user before implementation starts.
+   - Stop if any `blocked-by-contract-decision` item remains unresolved, unless the user explicitly authorizes implementing only the `ready` subset while blocked chunks remain held.
+   - Stop if a `needs-small-freeze-before-prompt` item affects the next implementation path and cannot be resolved from written docs.
+
+For each authorized ready chunk:
+
+2. Select the next chunk.
+   - Identify the next ready chunk from the checklist, prompt map, and readiness audit.
    - Verify the chunk has not already landed.
    - Run `git status --short` and relevant `git log --oneline` checks to verify the chosen chunk has not already landed and that the review target matches the current worktree.
 
-2. Write the implementer prompt.
+3. Write the implementer prompt.
    - Produce one surgical prompt for that chunk only.
    - Save official prompts beside the companion plan/checklist unless the user requests another output path.
    - Re-read the saved prompt before delegating.
 
-3. Delegate implementation.
+4. Delegate implementation.
    - Spawn a fresh implementer sub-agent when possible.
    - Give the sub-agent the saved prompt and explicitly tell it to use `$implementer`.
    - Pass only the context needed for that chunk.
    - Tell the sub-agent not to commit and to report changed files, validation, blockers, and proposed commit message.
 
-4. Review the result.
+5. Review the result.
    - Inspect the actual diff/worktree, not just the sub-agent summary.
    - Compare against the frozen plan, checklist, prompt, and declared scope.
    - Verify the implementer's self-audit claims against the diff.
    - Lead review with findings ordered by severity.
    - Save or update review outcomes beside the companion plan/checklist when the run is maintaining staged workflow artifacts.
 
-5. Handle review outcome.
+6. Handle review outcome.
    - If contract ambiguity exists, stop and identify the exact missing decision.
    - If implementation violates the prompt or frozen contracts and the docs are clear, write a surgical follow-up prompt.
    - Send the follow-up to the same implementer sub-agent when continuity helps; spawn a new implementer if a fresh pass is safer.
    - Repeat review/follow-up until accepted, blocked, or stopped by the user.
 
-6. Validate when evidence is required.
+7. Validate when evidence is required.
    - Run direct validation yourself for simple build, test, or diff checks.
    - Invoke `$validator` for feature acceptance, regression, contract, UI/browser, runtime, API, device, or integration evidence when a separate validation pass would reduce risk.
    - Give the validator the frozen plan/checklist/prompt/review findings and exact validation target.
    - Treat validator results as evidence for the orchestrator's acceptance decision, not as acceptance by themselves.
 
-7. Accept the chunk.
+8. Accept the chunk.
    - Confirm required validation passed or that the user accepted the validation gap.
    - Confirm no out-of-scope work remains.
    - Commit only if the user authorized commits.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
 
-8. Continue.
-   - Update or report checklist, prompt-map, and review-outcome state as appropriate.
+9. Continue.
+   - Update or report checklist, prompt-map, readiness-audit, and review-outcome state as appropriate.
    - Choose the next ready chunk.
    - Stop when all chunks are complete, blocked, or no ready chunk remains.
+
+## Readiness Audit Rules
+
+The readiness audit exists to resolve blockers before implementation, not during the first failed prompt.
+
+For every chunk, record:
+
+- chunk ID/name
+- readiness classification: `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`
+- exact missing decision, dependency, or environment blocker
+- why an implementer must not decide it
+- recommended default when the written docs support one
+- options and tradeoffs when the user must decide
+- plan/checklist/prompt-map updates required after the decision
+
+Before implementation starts, require one of:
+
+- all contract blockers and small freezes are resolved and written back into the plan/checklist/prompt map
+- or the user explicitly authorizes a ready-subset run while blocked chunks remain held
+
+Do not spawn implementer sub-agents for blocked chunks. Do not let the implementer resolve parent-route semantics, API contract choices, persistence semantics, timestamp timebases, ownership boundaries, cleanup semantics, or other frozen-contract decisions.
 
 ## Prompt Writing Rules
 
@@ -221,6 +252,8 @@ Stop and report clearly when:
 
 - a contract, symbol, endpoint, data source, or output path is ambiguous
 - the plan/checklist/prompt map disagree and the correct contract cannot be inferred from written docs
+- the readiness audit has unresolved `blocked-by-contract-decision` items and the user has not authorized a ready-subset run
+- a `needs-small-freeze-before-prompt` decision affects the next implementation path
 - implementation needs scope widening
 - validation cannot run and the risk cannot be resolved locally
 - sub-agent changes are not inspectable as an actual diff
@@ -233,6 +266,7 @@ For each orchestration run, report:
 
 - chunks completed
 - chunks blocked and why
+- readiness audit status
 - commits made, if any
 - validations run
 - residual risk
