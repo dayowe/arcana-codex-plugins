@@ -49,6 +49,7 @@ For each ready chunk:
    - Read the plan, checklist, prompt map, recent review notes, and relevant git/worktree state.
    - Identify the next ready chunk from the checklist and prompt map.
    - Verify the chunk has not already landed.
+   - Run `git status --short` and relevant `git log --oneline` checks to verify the chosen chunk has not already landed and that the review target matches the current worktree.
 
 2. Write the implementer prompt.
    - Produce one surgical prompt for that chunk only.
@@ -66,6 +67,7 @@ For each ready chunk:
    - Compare against the frozen plan, checklist, prompt, and declared scope.
    - Verify the implementer's self-audit claims against the diff.
    - Lead review with findings ordered by severity.
+   - Save or update review outcomes beside the companion plan/checklist when the run is maintaining staged workflow artifacts.
 
 5. Handle review outcome.
    - If contract ambiguity exists, stop and identify the exact missing decision.
@@ -86,7 +88,7 @@ For each ready chunk:
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
 
 8. Continue.
-   - Update or report checklist/prompt-map state as appropriate.
+   - Update or report checklist, prompt-map, and review-outcome state as appropriate.
    - Choose the next ready chunk.
    - Stop when all chunks are complete, blocked, or no ready chunk remains.
 

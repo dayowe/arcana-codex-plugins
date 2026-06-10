@@ -26,6 +26,7 @@ Treat questions, observations, and suggestions as analysis-only unless the user 
 - Do not ask the implementer to guess.
 - Default to skepticism about unstated assumptions, explicit scope boundaries, and concrete filenames, routes, states, dates, fields, and error codes.
 - Keep `update_plan` synced for substantial work, with exactly one step in progress.
+- Never revert unrelated dirty changes; ignore them unless they directly block the requested planner/reviewer task.
 
 ## Required Inputs
 
@@ -140,6 +141,7 @@ Use the prompt map to preserve sequencing for the planner/reviewer. Do not inclu
 Before writing the prompt:
 
 - verify the correct next chunk from the checklist, prompt map, recent git history, and current worktree state when available
+- use `git status --short` and relevant `git log --oneline` checks before claiming a chunk is next, landed, or ready for review
 - state which chunk you chose and why
 - stop if an ambiguity blocks an implementer-quality prompt
 - include current-state context only to the extent needed for the implementer to execute the chunk without relying on prior chat memory
@@ -210,8 +212,21 @@ Before presenting or saving a prompt:
 - put `git log` options before any `--` pathspec separator
 - include `git diff --check` for prompts that may edit docs or code, unless a no-diff-check reason is explicit
 - when companion docs may be untracked, require `git status --short` plus readback or explicit untracked-file verification
+- if validation commands allow adjusted paths or equivalent local substitutions, require the implementer to report the exact adjustment in the final summary
 - keep scope, out-of-scope work, validation, test posture, output path, and save behavior aligned with the user request
 - do not add a visible prompt-lint report unless asked
+
+## Durable Review Artifacts
+
+When the staged workflow is maintaining on-disk artifacts, do not leave review outcomes only in chat. Save or update review notes or outcomes beside the companion plan/checklist unless the user explicitly asks for chat-only review.
+
+A review outcome should capture:
+
+- chunk ID/name
+- verdict: accepted, needs follow-up, blocked, or deferred
+- findings or explicit no-findings result
+- validation status and residual risk
+- next recommended action
 
 ## Review Rules
 
@@ -249,6 +264,7 @@ Before ending a planner/reviewer turn, verify:
 - official prompts are in the companion plan/checklist directory unless another path was requested
 - filenames follow local feature naming conventions when such conventions are discoverable
 - saved official prompt contents were re-read
+- review outcomes were saved or updated when the workflow expects durable review artifacts
 - required workflow artifacts were not left only in chat
 - the next chunk can be described from docs and handoff artifacts without relying on prior session memory
 
