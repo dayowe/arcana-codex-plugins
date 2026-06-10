@@ -1,6 +1,6 @@
 # Arcana Codex Plugins
 
-This repository is a Codex plugin marketplace for Arcana workflows.
+Codex plugin marketplace for reusable agent workflows.
 
 ## Included Plugins
 
@@ -11,7 +11,7 @@ This repository is a Codex plugin marketplace for Arcana workflows.
 Add this Git repository as a Codex marketplace:
 
 ```bash
-codex plugin marketplace add ssh://git@your-git-server/path/arcana-codex-plugins.git --ref main
+codex plugin marketplace add dayowe/arcana-codex-plugins --ref master
 ```
 
 Install the staged implementation plugin:
@@ -41,9 +41,16 @@ plugins/
 
 ## Updating
 
-After changing a plugin, commit and push the repository, then refresh the marketplace:
+After pushing changes, refresh the marketplace snapshot:
 
 ```bash
 codex plugin marketplace upgrade arcana-codex-plugins
+```
+
+If `plugins/staged-implementation/` changed, reinstall the plugin:
+
+```bash
 codex plugin add staged-implementation@arcana-codex-plugins
 ```
+
+Start a new Codex session after reinstalling so updated skills are loaded.

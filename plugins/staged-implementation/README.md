@@ -31,7 +31,7 @@ staged-implementation/
 Codex installs plugins from a marketplace catalog. To publish this from Git, put the plugin inside a marketplace repository:
 
 ```text
-codex-plugins/
+arcana-codex-plugins/
   .agents/
     plugins/
       marketplace.json
@@ -50,9 +50,9 @@ Example `.agents/plugins/marketplace.json`:
 
 ```json
 {
-  "name": "my-codex-plugins",
+  "name": "arcana-codex-plugins",
   "interface": {
-    "displayName": "My Codex Plugins"
+    "displayName": "Arcana Codex Plugins"
   },
   "plugins": [
     {
@@ -76,13 +76,13 @@ Example `.agents/plugins/marketplace.json`:
 Add the marketplace repository:
 
 ```bash
-codex plugin marketplace add ssh://git@your-git-server/path/codex-plugins.git --ref main
+codex plugin marketplace add dayowe/arcana-codex-plugins --ref master
 ```
 
 Install the plugin:
 
 ```bash
-codex plugin add staged-implementation@my-codex-plugins
+codex plugin add staged-implementation@arcana-codex-plugins
 ```
 
 Start a new Codex session after installation so the bundled skills are available.
@@ -126,4 +126,6 @@ Validate an individual skill:
 python3 /path/to/skill-creator/scripts/quick_validate.py /path/to/staged-implementation/skills/planner
 ```
 
-When updating an installed local plugin, bump or cache-bust the plugin version and reinstall it from the marketplace so Codex picks up the new files.
+After pushing marketplace changes, run `codex plugin marketplace upgrade arcana-codex-plugins`.
+
+If this plugin changed, reinstall it with `codex plugin add staged-implementation@arcana-codex-plugins`, then start a new Codex session so updated skills are loaded.
