@@ -126,6 +126,10 @@ Prefer existing tests/harnesses and the smallest validation surface that credibl
 
 Specify evidence reuse conditions: relevant source, harness, dependencies, configuration and environment must match, retaining original limits. Changed inputs require affected checks; uncertain applicability requires a rerun. A correction need not repeat unrelated builds/screenshots/reviews, but efficiency cannot weaken an acceptance case.
 
+Plan the temporary-resource lifecycle alongside validation: identify required evidence/recovery retention, durable destinations and release conditions for disposable checkouts, builds and browser profiles. Put a compact ownership/retention record in the existing handoff, not another reporting system. Require headroom checks before large allocations and prefer compatible existing environments when reuse preserves isolation and candidate identity. Copying large workspaces elsewhere on the same filesystem does not reclaim space; generated artifacts do not belong in Git by default.
+
+Carry disk defaults into assignments without asking for routine configuration: below 5 GiB free warns/serializes large allocations; 2 GiB or less pauses write-heavy work and reports a blocker. Allow explicit project/run overrides, recorded in the handoff. Require parent coordination of concurrent additional peak usage on each receiving filesystem so admitted operations leave more than the critical reserve; disk-full/quota/inode errors stop affected writes regardless of thresholds.
+
 ## Checklist Artifacts
 
 When asked to write or update an implementation checklist from a plan, make it operational enough for fresh implementer sessions. Include, as applicable:
@@ -138,6 +142,7 @@ When asked to write or update an implementation checklist from a plan, make it o
 - exit criteria
 - validation commands/posture, acceptance level and required environment; distinguish local, integration and platform/release gates
 - test posture: extend existing tests, add minimal local tests, or no new test harness
+- temporary-resource ownership, retained evidence/recovery needs and cleanup boundary when large disposable resources are expected
 - ambiguity/blocker notes with the exact missing decision
 
 Do not promote every plan bullet into a separate chunk. Apply the merge/split rules before finalizing the checklist.
@@ -271,7 +276,10 @@ Every orchestrator prompt must include:
 - prompt output directory or naming convention
 - validation expectations
 - commit policy
+- cleanup authority: explicit scope/source, or not authorized; required retention and resource handoff
 - stopping conditions
+
+Carry forward explicit bounded cleanup authorization when already granted. Permission to implement, validate or commit alone does not grant deletion authority, and this skill grants none. If cleanup is not authorized, record that rather than invent permission or block unrelated safe work; request approval for concrete eligible paths before deletion is needed. Never propose blanket clearing of `/tmp`, shared caches or pre-existing files.
 
 The commit policy must be explicit and must use one of:
 

@@ -27,6 +27,7 @@ Prefer a task packet containing:
 - prompt output directory or naming convention
 - validation expectations
 - commit policy: `authorized-for-accepted-chunks`, `ask-before-each-commit`, or `do-not-commit`
+- cleanup authority and retained evidence/recovery requirements, when temporary resources are used
 - stopping conditions
 
 Resolve required paths and output locations from explicit instructions and established repository/workflow conventions first. For saved prompts, use the identified companion plan/checklist location and a descriptive filename if no narrower convention exists; state the chosen path and do not overwrite unrelated artifacts. Ask when a required location cannot be established or conflicting instructions remain. Do not guess unresolved contracts, data sources or validation targets.
@@ -102,6 +103,7 @@ For each authorized ready chunk:
 
 9. Continue.
    - Update one live handoff and the chunk's current outcome; update checklist/map/readiness entries when their state/dependencies change, without copying the running journal into each artifact.
+   - Reconcile temporary-resource ownership/retention and perform eligible authorized cleanup under **Temporary Resources and Cleanup** before the next large allocation.
    - Choose the next ready chunk.
    - Stop when all chunks are complete, blocked, or no ready chunk remains.
 
@@ -188,6 +190,7 @@ When spawning an implementer sub-agent:
 - instruct it not to commit
 - keep the task narrow and self-contained
 - where supported, use scoped context instead of a full-history fork, carrying all applicable instructions, authority and contract references; preserve model/effort choices
+- pass cleanup scope, retention requirements and disk/allocation restrictions; require workers to report exact owned resource paths and outstanding consumers on handoff
 - avoid delegating planner/reviewer decisions
 - wait only when the result is needed for the next critical-path step
 - close sub-agents when their chunk is accepted or permanently blocked
@@ -200,6 +203,7 @@ When invoking a validator pass:
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
+- pass explicit cleanup authority or its absence, retention requirements, disk thresholds and allocation restrictions; require owned-resource handoff
 - ask for pass/fail/blocked evidence, residual risk, and untested areas
 - do not ask the validator to edit production code or commit
 - review the validator's evidence before accepting the chunk
@@ -215,6 +219,26 @@ For corrections, put a short impact note in the existing prompt/review: changed 
 Use automation for repeatable regression/mechanical checks and browser inspection for relevant visual/focus behavior and discrepancies. Do not automatically repeat the full matrix with every tool. Retain each required case at its assigned evidence layer/gate. Matching builds/evidence satisfy a requirement only when it permits reuse; later platform/device checks remain pending until observed. Never silently rewrite acceptance to avoid a blocker.
 
 Report concise results, failures and evidence paths; retain raw logs/artifacts and inspect unexpected output. Link evidence instead of duplicating logs/galleries across reviews. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
+
+## Temporary Resources and Cleanup
+
+Maintain a compact record in the existing handoff of exact run-created paths, purpose/owner, active or future consumers, and release condition. Register resources when created and transfer responsibility when a worker exits; a closed agent does not make its files disposable. On resume, reconcile that record against actual resources before reusing or removing them. Do not infer ownership from a filename prefix, age or location under `/tmp`.
+
+Use these disk defaults automatically unless explicit project/run instructions override them; record any override in the existing handoff. Per filesystem, below **5 GiB free** means report low headroom and serialize large allocations; **2 GiB or less free** means a critical disk-space blocker and pause write-heavy work. They are operating defaults, not proof that a particular build fits.
+
+Before large builds, dependency/browser installations, checkout copies or archives, the parent checks every receiving filesystem and coordinates active/planned allocations there. Admit a start only when measured free space minus their conservative remaining additional peak, including the proposed operation, stays above the critical reserve. Account for starts already authorized to other workers before authorizing another; different directories may share one filesystem. If combined peak is uncertain, serialize and reassess; if even the single operation's headroom cannot be established, hold it. Use existing handoff/assignment notes, not a quota service. Workers must coordinate additional large allocations outside their assigned scope with the parent. Prefer compatible existing environments without sharing mutable candidate inputs or violating isolation.
+
+Recheck before large allocations and after substantial allocations or cleanup, rather than after every command. Completion releases an allocation assignment, not its retained bytes: remeasure free space and account for remaining consumers before scheduling more work. No continuous monitoring system is required.
+
+At observed critical space, or any disk-full/quota/inode-exhaustion error regardless of free bytes, stop launching affected writes, safely halt affected owned write-heavy operations and immediately report the blocker. State the filesystem, available capacity/error, held operations, known run-owned resources and eligible cleanup or needed user intervention. Do not retry failed writes, launch a large emergency archive or treat partial outputs as valid evidence. Only already-authorized bounded cleanup may reclaim resources; do not invent deletion authority or override a user pause. Independent read-only work may continue only if safe and authorized; stop the run when storage pressure prevents reliable work globally. Resume affected writes only after rechecking safe headroom and allocation conditions; inspect potentially partial/corrupt outputs, restore candidate identity and rerun affected checks before acceptance.
+
+At validation release, acceptance, abandonment or pause/handoff, classify resources as still in use, retained evidence/recovery, or disposable. The parent owns disposition across workers and later gates. Preserve required raw evidence, unique failed/unfinished state, uncommitted source and rollback packages until their retention condition is resolved. A failed run need not keep every duplicate dependency tree forever, but do not discard anything needed to substantiate/reproduce findings or satisfy a pending gate.
+
+Before releasing an evidence-bearing workspace, preserve the required artifacts in the agreed durable location, verify they remain readable/identifiable, and update references. Keep original failure identity; do not leave the only evidence behind a deleted temporary path. Moving bytes to the same filesystem is not space reclamation, and copying entire disposable workspaces or committing bulky generated output is not the default preservation method.
+
+Deletion requires explicit user/project authorization for bounded cleanup, carried into the assignment; implement/validate/commit permission alone is insufficient. Check each exact path is run-owned and within that scope, with no active process/validator, retained artifact or pending consumer depending on it. Release owned processes/handles before removal, respecting pauses and operational authority. Do not traverse symlinks/mounts into unrelated locations, clear `/tmp` broadly, delete by wildcard/prefix, or prune shared caches, pre-existing/user files or resources belonging to other runs. Worker resources may be cleaned by the parent after a recorded ownership handoff, subject to the same authorization and release checks; resources still owned by another worker remain protected. Use the owning tool's safe lifecycle for managed resources such as Git worktrees, without forced removal of uncommitted work. If ownership, retention or authority is unclear, keep the resource and ask with concrete paths/reasons.
+
+Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. These rules define future cleanup procedure, not permission to delete anything by themselves.
 
 ## Review Rules
 

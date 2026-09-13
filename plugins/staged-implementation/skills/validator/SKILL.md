@@ -60,6 +60,8 @@ Follow the assigned acceptance level: local implementation, integration, or actu
    - Separate happy paths, negative paths, edge cases, and contract checks.
    - Identify tools to use: build/test commands, API calls, browser tools, logs, screenshots, device/runtime checks.
    - State any preconditions, such as running server, seeded data, credentials, hardware, or env vars.
+   - Record owned temporary paths/profiles and their consumers as created. Check target-filesystem headroom before large build/browser installs, copies or captures; hold unsafe allocations. Reuse compatible resources without changing the frozen candidate or breaking isolation.
+   - Receive cleanup scope/retention and allocation restrictions explicitly. Coordinate large starts with the parent, account for combined remaining peak usage per filesystem, and recheck after substantial allocations. Defaults unless explicitly overridden: below 5 GiB free report/serialize large allocations; 2 GiB or less pause write-heavy work and report. Keep projected free space above the critical reserve; without a parent, account for known competing allocations and serialize when uncertain.
 
 3. Execute validation.
    - Use the real target when runtime behavior matters.
@@ -67,6 +69,7 @@ Follow the assigned acceptance level: local implementation, integration, or actu
    - For API validation, check status codes, response shape, error codes, auth behavior, and persistence side effects as specified.
    - For build/test validation, run the narrowest commands that cover the risk.
    - For firmware/device validation, prefer existing build targets, logs, diagnostics, and non-destructive runtime checks.
+   - On critical disk space or disk-full/quota/inode errors, stop affected writes, safely halt owned write-heavy operations and report the blocker immediately. Do not retry, enlarge archives or invent cleanup authority. Qualify interrupted evidence; after safe headroom returns, verify candidate/output integrity and rerun affected checks before reporting them as passing.
 
 4. Capture evidence.
    - Record commands or tools used.
@@ -81,6 +84,7 @@ Follow the assigned acceptance level: local implementation, integration, or actu
    - Explain failures with concrete observed behavior.
    - State residual risk and untested areas.
    - Do not claim acceptance beyond what was validated.
+   - Release owned runtime resources as authorized and hand off retained/disposable paths with reasons. Confirm required evidence remains accessible at its recorded durable location before its temporary workspace is removed; preserve failure identity and pending-gate/recovery needs.
 
 For a correction/revalidation, independently verify the change's impact and reuse only permitted evidence whose relevant source, harness, dependencies, build configuration and environment still match. Do not trust the implementer's PASS alone. Rerun affected checks, new failure cases and explicitly required fresh checks; rerun when applicability is uncertain. Preserve original failed evidence and avoid recreating unchanged reports/galleries. Shared-owner changes may require broader coverage.
 
@@ -119,6 +123,7 @@ Do not accept approximate variants when the contract is exact.
 
 ## Safety Rules
 
+- Delete temporary resources only under explicit bounded cleanup authority after parent/consumer release and verification of exact ownership/path boundaries. Preserve required evidence, release processes first, and report cleanup or retained paths. Do not sweep `/tmp`, traverse links into unrelated locations, remove another worker's candidate/shared caches, or force-remove uncommitted work. Unclear authority/retention means keep and report; a pause grants no new deletion permission.
 - Do not mutate production systems unless explicitly authorized.
 - Do not perform destructive actions unless explicitly authorized.
 - Do not commit changes.
