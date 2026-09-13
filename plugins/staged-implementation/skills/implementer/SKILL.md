@@ -33,6 +33,8 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - Use `update_plan` for non-trivial work.
    - Keep exactly one step in progress.
    - Revise the plan when scope or findings change.
+   - Record exact temporary paths as created, purpose/owner and remaining consumers in the existing handoff. Check target-filesystem headroom before large builds/installations/copies; hold unsafe allocations and report insufficient space. Reuse compatible environments only when isolation and candidate identity remain intact.
+   - Coordinate large allocation starts with the parent and report completion/retained bytes; recheck after substantial allocations. Defaults unless explicitly overridden: below 5 GiB free report/serialize large allocations; 2 GiB or less pause write-heavy work and report a blocker. Admission must leave more than the critical reserve after combined remaining peak usage, not merely pass an independent free-space check. Outside orchestration, apply the same checks to known competing allocations and serialize when uncertain.
 
 3. Extract contracts before coding.
    - For contract-heavy chunks, write down the required MUSTs, invariants, exact fields, response shapes, event semantics, error mappings, persistence formats, and non-goals before editing.
@@ -56,6 +58,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - For corrections, identify affected behavior/consumers and rerun affected checks. Reuse evidence only when the assignment permits it and relevant inputs still match; retain original limits. Rerun if applicability is uncertain. Never skip a required fresh check or broaden into unrelated matrices/harnesses.
    - If a command must be adjusted, report the exact adjustment and why.
    - If validation cannot run, report the blocker clearly.
+   - On critical disk space or disk-full/quota/inode errors, stop affected writes and safely halt owned write-heavy operations; report immediately, without retrying or deleting beyond explicit cleanup authority. After safe headroom is restored, inspect incomplete outputs and rerun affected checks against the identified candidate. Preserve user pauses and recovery evidence.
 
 6. Self-audit.
    - Inspect the actual diff before finishing.
@@ -67,11 +70,14 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 7. Report results.
    - Summarize changed files and behavior.
    - Distinguish fresh validation from verified reused evidence; give results/artifact paths instead of repeating full logs. Retain raw evidence and inspect failures/unexpected output.
+   - Hand off owned temporary paths, active processes, retained evidence/recovery needs and disposable candidates to the parent. Do not remove a build/check-out needed by validation or a later gate merely because implementation ended.
    - List blockers, ambiguities, or residual risk.
    - Include the requested contract verification matrix for contract-heavy chunks.
    - Always propose a one-line commit message unless the user explicitly asks not to. If the prompt defines a chunk ID, start the message with that exact prefix.
 
 ## Implementation Rules
+
+Clean only exact run-owned disposable resources under explicit bounded cleanup authority and after the parent/consumers release them. Verify ownership and path boundaries, preserve required evidence in a verified durable location with updated references, and release owned processes first. Never sweep `/tmp`, follow links into unrelated locations, prune shared caches or force-remove uncommitted work. Without authority or with uncertain retention, leave paths recorded and request clarification; a pause is not new cleanup authority.
 
 - Treat questions, observations, and suggestions as analysis-only unless the user explicitly asks for code or patches.
 - Stop on ambiguity instead of choosing a reasonable-looking contract.
