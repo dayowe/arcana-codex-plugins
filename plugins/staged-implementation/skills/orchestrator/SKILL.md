@@ -29,8 +29,8 @@ Prefer a task packet containing:
 - commit policy: `authorized-for-accepted-chunks`, `ask-before-each-commit`, or `do-not-commit`
 - stopping conditions
 
-If any required path, contract, data source, validation target, or output location is unclear, stop and ask. Do not guess.
-If commit policy is missing or not one of the supported values, stop and ask. Do not silently choose a safer or more aggressive default.
+Resolve required paths and output locations from explicit instructions and established repository/workflow conventions first. For saved prompts, use the identified companion plan/checklist location and a descriptive filename if no narrower convention exists; state the chosen path and do not overwrite unrelated artifacts. Ask when a required location cannot be established or conflicting instructions remain. Do not guess unresolved contracts, data sources or validation targets.
+Resolve and normalize commit authorization under **Commit Rules** before implementation. A missing literal policy label does not require clarification when existing instructions already establish its meaning.
 
 ## Authority Boundaries
 
@@ -233,7 +233,11 @@ Commit behavior is controlled only by the explicit commit policy. Supported poli
 - `ask-before-each-commit`
 - `do-not-commit`
 
-If the commit policy is missing, stop and ask before starting implementation. Do not infer commit behavior from general intent.
+Resolve the policy from current user instructions, still-applicable earlier explicit authorization for this run, or an unambiguous project/workflow policy. Normalize clear ordinary language into a supported value and record it with its source in the handoff or current execution record. Later explicit instructions take precedence. Do not ask the user to repeat authorization or spell the exact label.
+
+For example, "commit each accepted chunk after validation" authorizes `authorized-for-accepted-chunks`; "ask me before every commit" means `ask-before-each-commit`; "do not commit" means `do-not-commit`. General permission to implement, a hypothetical workflow example, or permission for a single commit does not authorize committing all chunks.
+
+If authority remains missing, conflicting or ambiguous after checking those sources, stop and ask before starting implementation. Do not invent a default. A normalized commit policy does not override a user pause or authorize pushing, publishing or unrelated changes.
 
 For `authorized-for-accepted-chunks`:
 
@@ -270,14 +274,14 @@ Do not commit if:
 - unrelated dirty changes cannot be separated safely
 - the commit policy is `do-not-commit`
 - the commit policy is `ask-before-each-commit` and the user has not approved that specific commit
-- the commit policy is missing or unsupported
+- commit authority remains unresolved or cannot be normalized to a supported policy
 
 ## Stopping Conditions
 
 Stop and report clearly when:
 
-- commit policy is missing or unsupported
-- a contract, symbol, endpoint, data source, or output path is ambiguous
+- commit authority remains unresolved after checking current instructions and still-applicable authorization
+- a contract, symbol, endpoint or data source is ambiguous, or a required output location remains unresolved after checking instructions and established conventions
 - the plan/checklist/prompt map disagree and the correct contract cannot be inferred from written docs
 - the readiness audit has unresolved `blocked-by-contract-decision` items and the user has not authorized a ready-subset run
 - a `needs-small-freeze-before-prompt` decision affects the next implementation path

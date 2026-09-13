@@ -242,7 +242,7 @@ When the user asks the planner for a commit message, output a one-line commit me
 
 When asked to write, produce, or prepare an orchestrator prompt, treat it as an official durable handoff artifact, not casual chat output.
 
-Save official orchestration handoff prompts beside the plan/checklist/prompt map unless the user explicitly asks for chat-only output or gives another path. If no output path is clear, ask for the output path before presenting chat-only. Re-read the saved file before finishing.
+Save official orchestration handoff prompts at the user's specified path, or follow the established repository/workflow output location and naming convention. Otherwise, save beside the identified plan/checklist/prompt map with a descriptive filename. State the chosen path; do not ask solely because the user omitted a filename. Ask only if the companion location cannot be established or conflicting instructions leave the destination ambiguous. Do not overwrite an unrelated existing artifact. Honor an explicit chat-only request. Re-read the saved file before finishing.
 
 Every orchestrator prompt must include:
 
@@ -263,12 +263,14 @@ The commit policy must be explicit and must use one of:
 - `ask-before-each-commit`
 - `do-not-commit`
 
-If the user has not specified commit behavior and no project/workflow default exists, stop and ask before saving the prompt. Do not silently choose `do-not-commit`, `ask-before-each-commit`, or `authorized-for-accepted-chunks`.
+Resolve commit behavior from the user's current instructions, still-applicable earlier explicit authorization for this run, or an unambiguous project/workflow policy. Normalize clear ordinary-language instructions to one of the supported values and briefly identify their source in the handoff. The user need not supply the exact label. Later explicit instructions take precedence; do not ask again for authorization already given and not withdrawn.
+
+Ask before saving only when commit authority remains missing, conflicting or ambiguous after checking those sources. General permission to implement, an example of a possible workflow, or permission for one specific commit is not authorization to commit every accepted chunk. Do not silently select a policy merely to avoid asking.
 
 If the user says to orchestrate implementation and their stated workflow preference says the orchestrator should commit accepted chunks, use `authorized-for-accepted-chunks` and include this exact policy text:
 
 ```text
-Commit policy:
+Commit policy: authorized-for-accepted-chunks
 Commits are authorized for accepted chunks only. Commit after each accepted chunk once review and required validation pass. Do not commit unrelated dirty changes. Use one-line commit messages with the chunk ID prefix when one exists.
 ```
 
