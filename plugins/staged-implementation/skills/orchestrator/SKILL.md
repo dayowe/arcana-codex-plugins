@@ -50,6 +50,7 @@ Before delegating implementation, run a readiness preflight:
 1. Establish current state.
    - Read project instructions first.
    - Establish context from the plan, checklist, prompt map, current handoff/review and relevant git/worktree state. On continuation, read changed instructions/contracts and affected scope rather than reloading unchanged history.
+   - Before initial implementation delegation, verify the reviewed planning package against its checkpoint and actual working files. If relevant planning changes remain uncommitted, honor an explicit uncommitted disposition or applicable planning-checkpoint authorization; otherwise finish applicable document checks, identify the exact files and proposed commit, and ask before proceeding. Planning-checkpoint permission and accepted-chunk commit permission are separate. Exclude unrelated changes; do not repeat a resolved checkpoint request or turn routine execution-status updates into a new planning checkpoint gate. Record the verified baseline, including relevant uncommitted inputs when explicitly allowed.
    - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
    - Initially classify every chunk as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`. Subsequently verify affected entries/dependencies; broaden when a shared contract changes or applicability is uncertain.
    - Surface all contract blockers and small freezes to the user before implementation starts.
@@ -269,7 +270,7 @@ If there are no findings, state an acceptable verdict clearly before summaries.
 
 ## Commit Rules
 
-Commit behavior is controlled only by the explicit commit policy. Supported policies are:
+Implementation-chunk commits are controlled by the explicit commit policy. Planning checkpoints require their own applicable authorization under the preflight rule; neither permission grants the other. A broader user instruction forbidding commits or requiring confirmation for every commit still applies to both scopes unless explicitly changed. Supported implementation policies are:
 
 - `authorized-for-accepted-chunks`
 - `ask-before-each-commit`
