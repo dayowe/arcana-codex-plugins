@@ -58,7 +58,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - For corrections, identify affected behavior/consumers and rerun affected checks. Reuse evidence only when the assignment permits it and relevant inputs still match; retain original limits. Rerun if applicability is uncertain. Never skip a required fresh check or broaden into unrelated matrices/harnesses.
    - If a command must be adjusted, report the exact adjustment and why.
    - If validation cannot run, report the blocker clearly.
-   - On critical disk space or disk-full/quota/inode errors, stop affected writes and safely halt owned write-heavy operations; report immediately, without retrying or deleting beyond explicit cleanup authority. After safe headroom is restored, inspect incomplete outputs and rerun affected checks against the identified candidate. Preserve user pauses and recovery evidence.
+   - On critical disk space or disk-full/quota/inode errors, stop affected writes and safely halt owned write-heavy operations; report immediately, without retrying or deleting beyond the assigned cleanup scope. After safe headroom is restored, inspect incomplete outputs and rerun affected checks against the identified candidate. Preserve user pauses and recovery evidence.
 
 6. Self-audit.
    - Inspect the actual diff before finishing.
@@ -77,7 +77,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 
 ## Implementation Rules
 
-Clean only exact run-owned disposable resources under explicit bounded cleanup authority and after the parent/consumers release them. Verify ownership and path boundaries, preserve required evidence in a verified durable location with updated references, and release owned processes first. Never sweep `/tmp`, follow links into unrelated locations, prune shared caches or force-remove uncommitted work. Without authority or with uncertain retention, leave paths recorded and request clarification; a pause is not new cleanup authority.
+An authorized orchestration run includes routine cleanup of its tracked, disposable temporary resources; the parent passes that bounded scope and any restrictions into the assignment. Clean only exact assigned run-owned resources after parent/consumer release, without a separate user approval within that scope. Verify ownership and path boundaries, preserve required evidence in a verified durable location with updated references, and release owned processes first. Never sweep `/tmp`, follow links into unrelated locations, prune shared caches, remove files predating the run or force-remove uncommitted work. Standalone implementation permission does not grant this orchestration scope. Without applicable authority or with uncertain retention, leave paths recorded and request clarification; retention/no-deletion instructions and pauses remain binding.
 
 - Treat questions, observations, and suggestions as analysis-only unless the user explicitly asks for code or patches.
 - Stop on ambiguity instead of choosing a reasonable-looking contract.
