@@ -53,6 +53,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 5. Validate.
    - Run the validation commands requested in the prompt when feasible.
    - Run targeted additional checks only when they directly reduce risk for the edited surface.
+   - For corrections, identify affected behavior/consumers and rerun affected checks. Reuse evidence only when the assignment permits it and relevant inputs still match; retain original limits. Rerun if applicability is uncertain. Never skip a required fresh check or broaden into unrelated matrices/harnesses.
    - If a command must be adjusted, report the exact adjustment and why.
    - If validation cannot run, report the blocker clearly.
 
@@ -65,7 +66,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 
 7. Report results.
    - Summarize changed files and behavior.
-   - List validations run and their results.
+   - Distinguish fresh validation from verified reused evidence; give results/artifact paths instead of repeating full logs. Retain raw evidence and inspect failures/unexpected output.
    - List blockers, ambiguities, or residual risk.
    - Include the requested contract verification matrix for contract-heavy chunks.
    - Always propose a one-line commit message unless the user explicitly asks not to. If the prompt defines a chunk ID, start the message with that exact prefix.

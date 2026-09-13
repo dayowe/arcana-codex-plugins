@@ -45,12 +45,15 @@ Support these modes:
 
 Choose the lightest validation surface that proves the requested behavior with credible evidence.
 
+Follow the assigned acceptance level: local implementation, integration, or actual platform/device/release. Do not import later gate requirements into local acceptance unless the contract makes them prerequisites. Conversely, local or emulated evidence cannot pass an actual-platform gate; report missing mandatory evidence as pending/blocked at the proper level.
+
 ## Workflow
 
 1. Read context.
    - Read project instructions first.
-   - Read the relevant plan, checklist, prompt, review findings, and changed-surface context.
+   - Read the assigned requirements, relevant plan/checklist sections, prompt, findings and changed-surface context; expand when dependencies or applicability are unclear, not to repeat unrelated planning audits.
    - Identify the exact behavior and contracts to validate.
+   - Verify the candidate's baseline/scoped changes, relevant test/build inputs and build/artifact provenance. Confirm writes to that scope and replacement of the target are held for the pass; do not assume a URL or HEAD alone identifies what is being tested.
 
 2. Create a validation plan.
    - List the validation items.
@@ -67,16 +70,19 @@ Choose the lightest validation surface that proves the requested behavior with c
 
 4. Capture evidence.
    - Record commands or tools used.
-   - Summarize relevant output.
+   - Summarize results/failures and artifact paths; retain full logs and inspect unexpected output. Distinguish newly run checks from verified reused evidence with its original limitations.
    - Capture screenshots only when they support the verdict.
    - Note relevant console errors, network failures, logs, or API responses.
    - Do not print secrets, tokens, passwords, or sensitive env values.
 
 5. Report verdict.
+   - Recheck candidate identity before reporting. If relevant inputs changed during validation, stop the affected checks, notify the parent and qualify old evidence; do not claim it validates the changed candidate. Resume affected validation only after a stable candidate is established.
    - Mark each validation item as pass, fail, blocked, or not tested.
    - Explain failures with concrete observed behavior.
    - State residual risk and untested areas.
    - Do not claim acceptance beyond what was validated.
+
+For a correction/revalidation, independently verify the change's impact and reuse only permitted evidence whose relevant source, harness, dependencies, build configuration and environment still match. Do not trust the implementer's PASS alone. Rerun affected checks, new failure cases and explicitly required fresh checks; rerun when applicability is uncertain. Preserve original failed evidence and avoid recreating unchanged reports/galleries. Shared-owner changes may require broader coverage.
 
 ## Browser/UI Validation
 
@@ -92,6 +98,8 @@ When validating a UI with browser or Playwright tools:
 - Capture screenshots as evidence when useful.
 - Prefer stable selectors and accessible roles when interacting with UI.
 - Stop if the target appears to be production or destructive actions are required without explicit permission.
+
+Give automation and browser inspection complementary roles instead of repeating every assertion through each tool. Capture representative affected visual/state cases plus identified regressions; retain any explicitly mandated viewport/state matrix. Broaden for a concrete uncovered risk, not merely because another tool or reviewer is available.
 
 ## Contract Validation
 

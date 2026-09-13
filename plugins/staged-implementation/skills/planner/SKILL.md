@@ -19,7 +19,7 @@ Treat questions, observations, and suggestions as analysis-only unless the user 
 
 - Read the relevant plan, checklist, prompt map, surrounding code, and recent git state needed for the requested action.
 - Own design clarity, scope boundaries, staged review, and next-chunk definition.
-- Freeze contracts, invariants, schemas, routes, event semantics, error mappings, and observable behavior before implementation starts.
+- Freeze applicable contracts, invariants, schemas, routes, event semantics, error mappings, and observable behavior before their dependent implementation starts.
 - Keep chunks narrow, reviewable, and testable.
 - Review against written docs and the actual diff, not intent, summaries, or memory.
 - If a review finding exposes a real contract gap, stop treating it as implementation work and clarify the docs first.
@@ -44,6 +44,8 @@ If a path, contract, data source, diff target, or output location is required an
 
 ## Workflow
 
+Use existing artifacts when they satisfy the requested step. A scoped update or review does not require recreating the entire planning sequence.
+
 1. Prepare or read the plan.
    - Identify the design, contracts, invariants, and semantics that implementation must preserve.
    - Identify what must not be guessed during implementation.
@@ -57,9 +59,9 @@ If a path, contract, data source, diff target, or output location is required an
    - Track readiness, sequencing, dependencies, and blocked chunks.
 
 4. Run the implementation readiness audit.
-   - Inspect every chunk in the plan, checklist, and prompt map.
+   - Initially inspect every chunk in the plan, checklist and prompt map; subsequently verify changed scope and affected dependencies, broadening when shared contracts change or impact is uncertain.
    - Surface contract blockers, dependencies, environment blockers, and small decisions that should be frozen before prompting.
-   - Do not write the first implementer prompt until contract blockers are resolved or the user explicitly authorizes starting only a ready subset.
+   - Resolve blockers on the intended implementation path; unrelated contract blockers require an explicitly authorized ready-subset run. Follow the readiness rules below for later engineering freezes.
 
 5. Choose the next chunk.
    - Pick one coherent behavioral, contract, or validation unit.
@@ -83,7 +85,7 @@ If a path, contract, data source, diff target, or output location is required an
    - Do not leave important contract clarifications only in chat when docs should be updated.
 
 9. Define the next handoff.
-   - Continue only after the current chunk is accepted, corrected, or blocked on a documented ambiguity.
+   - Hand off corrections to the current chunk, or record acceptance/a documented contract, dependency or environment hold before selecting another chunk. Continue only independently authorized ready work; preserve held work and honor run-wide pauses/authority limits.
 
 ## Chunk Sizing
 
@@ -114,6 +116,16 @@ Prefer splitting work when:
 
 Do not create separate prompts just because a second file is touched, a helper is extracted, or a checklist has multiple bullets that share the same risk and validation surface.
 
+## Planning and Evidence Proportionality
+
+Give each artifact one job: plan = architecture/rationale; checklist = work/dependencies/acceptance; prompt map = assignment routing/inputs; prompt = bounded execution pass. Link authoritative contracts or restate the exact applicable subset instead of copying whole contracts into every artifact. Preserve all applicable obligations and make them accessible to a fresh worker.
+
+Design validation alongside chunk boundaries. Assign each obligation to the first gate that needs it: local implementation, integrated behavior, or actual platform/device/release. Record its target and prerequisites. Do not require later release evidence before a local chunk unless correctness or safe activation depends on it. An unavailable mandatory check remains pending at its assigned gate; emulation/local success cannot pass that gate.
+
+Prefer existing tests/harnesses and the smallest validation surface that credibly proves the contract. Expand for shared-owner impact or newly found risk. Do not prescribe every appearance × viewport × state combination, another harness or another general review without a coverage need. Retain required integration/independent review and any explicitly mandated matrix or fresh run unless expressly amended.
+
+Specify evidence reuse conditions: relevant source, harness, dependencies, configuration and environment must match, retaining original limits. Changed inputs require affected checks; uncertain applicability requires a rerun. A correction need not repeat unrelated builds/screenshots/reviews, but efficiency cannot weaken an acceptance case.
+
 ## Checklist Artifacts
 
 When asked to write or update an implementation checklist from a plan, make it operational enough for fresh implementer sessions. Include, as applicable:
@@ -124,7 +136,7 @@ When asked to write or update an implementation checklist from a plan, make it o
 - frozen contracts, invariants, exact fields, routes, states, event semantics, persistence formats, and error mappings
 - implementation tasks grouped by behavior or contract surface
 - exit criteria
-- validation commands or validation posture
+- validation commands/posture, acceptance level and required environment; distinguish local, integration and platform/release gates
 - test posture: extend existing tests, add minimal local tests, or no new test harness
 - ambiguity/blocker notes with the exact missing decision
 
@@ -148,7 +160,7 @@ Use the prompt map to preserve sequencing for the planner/reviewer. Do not inclu
 
 ## Readiness / Ambiguity Audit
 
-After the plan, implementation checklist, and prompt map exist, proactively audit all chunks before writing the first implementer prompt or starting orchestration. Do this even if the user asks generally whether implementation can begin.
+After the plan, checklist and prompt map exist, audit all chunks once before the first implementer prompt or orchestration, including major feasibility risks and environment availability. Reuse a current audit; subsequently inspect changes and affected dependencies instead of repeating the entire audit. Broaden when a shared contract changes or the affected scope cannot be established.
 
 Classify every chunk as one of:
 
@@ -167,12 +179,16 @@ For every non-ready or weakly-ready chunk, produce a decision ledger entry with:
 - options and tradeoffs when the user must decide
 - plan/checklist/prompt-map updates required after the decision
 
+One shared blocker can name all affected chunks. Dependency-only holds need the missing predecessor and acceptance link, not a repeated options/decision essay.
+
 Before implementation starts, require one of these outcomes:
 
-- all contract blockers and small freezes are resolved and written back into the plan/checklist/prompt map
-- or the user explicitly authorizes starting only the `ready` subset while blocked chunks remain held
+- contract blockers are resolved and the intended chunk's required engineering freezes are written into the authoritative artifacts
+- or the user explicitly authorizes starting only the `ready` subset while unrelated contract-blocked chunks remain held
 
-Do not treat dependency-pending chunks as contract-ambiguous unless a missing decision blocks their future prompt. Do not hide blockers inside the prompt map only; summarize them clearly for the user.
+Schedule later mechanism freezes before their first dependent chunk, using actual predecessor code. Incomplete later implementation detail need not block independent ready work; investigate architectural feasibility and irreversible migration risks early. Never relabel an unresolved product/API contract as a routine engineering choice to bypass approval.
+
+Do not treat dependency-pending chunks as contract-ambiguous unless a missing decision blocks their future prompt. Summarize actual blockers clearly. Each further experiment should identify the question and an observation that distinguishes mechanisms. If equivalent experiments cannot resolve it, report the blocker/decision and continue only independently authorized ready work.
 
 ## Implementer Prompt Rules
 
@@ -181,15 +197,15 @@ Before writing the prompt:
 - verify the correct next chunk from the checklist, prompt map, recent git history, and current worktree state when available
 - use `git status --short` and relevant `git log --oneline` checks before claiming a chunk is next, landed, or ready for review
 - state which chunk you chose and why
-- verify the readiness audit is complete, or complete it first
-- do not write the first implementer prompt if unresolved `blocked-by-contract-decision` or `needs-small-freeze-before-prompt` items affect the intended implementation path, unless the user explicitly authorized a ready-subset run
+- verify readiness covers the intended chunk and current dependencies; update affected entries, or complete the initial audit if missing
+- do not write an execution prompt for a chunk affected by unresolved `blocked-by-contract-decision` or `needs-small-freeze-before-prompt` items; ready-subset authorization permits only unaffected ready chunks
 - stop if an ambiguity blocks an implementer-quality prompt
 - include current-state context only to the extent needed for the implementer to execute the chunk without relying on prior chat memory
 
 Keep the implementer `Read these first:` list focused:
 
 - include project instruction/context docs required by the repo
-- include the feature plan
+- include relevant feature-plan sections, not unrelated phases/history
 - include the implementation checklist only when it adds chunk-relevant boundaries or state not restated in the prompt
 - include chunk-specific docs/artifacts the implementer actually needs
 - do not include the prompt map by default; it is mainly a planner/reviewer sequencing artifact
@@ -307,6 +323,8 @@ A review outcome should capture:
 - findings or explicit no-findings result
 - validation status and residual risk
 - next recommended action
+
+Maintain one current outcome per chunk and one live execution handoff. Link raw evidence and distinct reviewer verdicts instead of duplicating their narratives across plan/checklist/map. Preserve historical failures; update scheduling artifacts when contracts or dependency state change, not after every tool call.
 
 ## Review Rules
 
