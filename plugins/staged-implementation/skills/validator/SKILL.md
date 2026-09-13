@@ -123,9 +123,9 @@ Do not accept approximate variants when the contract is exact.
 
 ## Safety Rules
 
-- Delete temporary resources only under explicit bounded cleanup authority after parent/consumer release and verification of exact ownership/path boundaries. Preserve required evidence, release processes first, and report cleanup or retained paths. Do not sweep `/tmp`, traverse links into unrelated locations, remove another worker's candidate/shared caches, or force-remove uncommitted work. Unclear authority/retention means keep and report; a pause grants no new deletion permission.
+- An authorized orchestration run includes routine cleanup of its tracked, disposable temporary resources; use the bounded scope and restrictions passed by the parent. After parent/consumer release and verification of exact ownership/path boundaries, no separate user approval is needed within that scope. Preserve required evidence, release processes first, and report cleanup or retained paths. Do not sweep `/tmp`, traverse links into unrelated locations, remove another worker's candidate/shared caches or files predating the run, or force-remove uncommitted work. Standalone validation permission does not grant this orchestration scope. Unclear authority/retention means keep and report; retention/no-deletion instructions and pauses remain binding.
 - Do not mutate production systems unless explicitly authorized.
-- Do not perform destructive actions unless explicitly authorized.
+- Other destructive actions require explicit authorization beyond routine run-owned cleanup.
 - Do not commit changes.
 - Do not fix code unless the user explicitly switches the task from validation to implementation.
 - Do not broaden validation into unrelated exploratory testing unless asked.

@@ -285,10 +285,10 @@ Every orchestrator prompt must include:
 - validation expectations
 - commit policy
 - planning checkpoint status: verified baseline or explicit uncommitted disposition under **Planning Checkpoint Before Orchestration**
-- cleanup authority: explicit scope/source, or not authorized; required retention and resource handoff
+- cleanup scope: routine run-owned cleanup default, applicable restrictions, required retention and resource handoff
 - stopping conditions
 
-Carry forward explicit bounded cleanup authorization when already granted. Permission to implement, validate or commit alone does not grant deletion authority, and this skill grants none. If cleanup is not authorized, record that rather than invent permission or block unrelated safe work; request approval for concrete eligible paths before deletion is needed. Never propose blanket clearing of `/tmp`, shared caches or pre-existing files.
+State in the handoff that authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. No separate cleanup approval question is needed within those bounds. Carry this scope into worker assignments and honor explicit retention/no-deletion instructions and higher-priority restrictions. On resuming the same run, accumulated resources qualify only after their run ownership and release conditions are verified and recorded. Unknown ownership, shared caches, files predating the run, unrelated resources and anything still needed remain excluded. Standalone planning/implementation/validation or commit permission does not grant this orchestration cleanup scope; ask for concrete additional authority only when needed outside it. Never propose blanket clearing of `/tmp`.
 
 The commit policy must be explicit and must use one of:
 

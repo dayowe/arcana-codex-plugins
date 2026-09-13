@@ -27,7 +27,7 @@ Prefer a task packet containing:
 - prompt output directory or naming convention
 - validation expectations
 - commit policy: `authorized-for-accepted-chunks`, `ask-before-each-commit`, or `do-not-commit`
-- cleanup authority and retained evidence/recovery requirements, when temporary resources are used
+- cleanup scope/restrictions and retained evidence/recovery requirements, using the routine run-owned default below when temporary resources are used
 - stopping conditions
 
 Resolve required paths and output locations from explicit instructions and established repository/workflow conventions first. For saved prompts, use the identified companion plan/checklist location and a descriptive filename if no narrower convention exists; state the chosen path and do not overwrite unrelated artifacts. Ask when a required location cannot be established or conflicting instructions remain. Do not guess unresolved contracts, data sources or validation targets.
@@ -204,7 +204,7 @@ When invoking a validator pass:
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
-- pass explicit cleanup authority or its absence, retention requirements, disk thresholds and allocation restrictions; require owned-resource handoff
+- pass the run's bounded cleanup scope and any restrictions, retention requirements, disk thresholds and allocation restrictions; require owned-resource handoff
 - ask for pass/fail/blocked evidence, residual risk, and untested areas
 - do not ask the validator to edit production code or commit
 - review the validator's evidence before accepting the chunk
@@ -223,6 +223,8 @@ Report concise results, failures and evidence paths; retain raw logs/artifacts a
 
 ## Temporary Resources and Cleanup
 
+Authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources once the checks below pass. State this default in the handoff and worker assignments; do not require separate cleanup approval within its bounds. Explicit retention/no-deletion instructions and higher-priority restrictions override the default. Reading this skill or doing standalone planning/implementation/validation does not authorize orchestration cleanup. Resources accumulated earlier in the same resumed run qualify only after ownership and release conditions are verified and recorded; unknown ownership or files predating the run do not qualify.
+
 Maintain a compact record in the existing handoff of exact run-created paths, purpose/owner, active or future consumers, and release condition. Register resources when created and transfer responsibility when a worker exits; a closed agent does not make its files disposable. On resume, reconcile that record against actual resources before reusing or removing them. Do not infer ownership from a filename prefix, age or location under `/tmp`.
 
 Use these disk defaults automatically unless explicit project/run instructions override them; record any override in the existing handoff. Per filesystem, below **5 GiB free** means report low headroom and serialize large allocations; **2 GiB or less free** means a critical disk-space blocker and pause write-heavy work. They are operating defaults, not proof that a particular build fits.
@@ -237,9 +239,9 @@ At validation release, acceptance, abandonment or pause/handoff, classify resour
 
 Before releasing an evidence-bearing workspace, preserve the required artifacts in the agreed durable location, verify they remain readable/identifiable, and update references. Keep original failure identity; do not leave the only evidence behind a deleted temporary path. Moving bytes to the same filesystem is not space reclamation, and copying entire disposable workspaces or committing bulky generated output is not the default preservation method.
 
-Deletion requires explicit user/project authorization for bounded cleanup, carried into the assignment; implement/validate/commit permission alone is insufficient. Check each exact path is run-owned and within that scope, with no active process/validator, retained artifact or pending consumer depending on it. Release owned processes/handles before removal, respecting pauses and operational authority. Do not traverse symlinks/mounts into unrelated locations, clear `/tmp` broadly, delete by wildcard/prefix, or prune shared caches, pre-existing/user files or resources belonging to other runs. Worker resources may be cleaned by the parent after a recorded ownership handoff, subject to the same authorization and release checks; resources still owned by another worker remain protected. Use the owning tool's safe lifecycle for managed resources such as Git worktrees, without forced removal of uncommitted work. If ownership, retention or authority is unclear, keep the resource and ask with concrete paths/reasons.
+Use the run's bounded cleanup scope, carried into each assignment. Check each exact path is run-owned and within that scope, with no active process/validator, retained artifact or pending consumer depending on it. Release owned processes/handles before removal, respecting pauses and operational authority. Do not traverse symlinks/mounts into unrelated locations, clear `/tmp` broadly, delete by wildcard/prefix, or prune shared caches, files predating the run, user files or resources belonging to other runs. Worker resources may be cleaned by the parent after a recorded ownership handoff, subject to the same authorization and release checks; resources still owned by another worker remain protected. Use the owning tool's safe lifecycle for managed resources such as Git worktrees, without forced removal of uncommitted work. If ownership, retention or authority is unclear, keep the resource and ask with concrete paths/reasons.
 
-Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. These rules define future cleanup procedure, not permission to delete anything by themselves.
+Perform eligible cleanup at the lifecycle boundaries above, including run completion, rather than waiting for disk pressure. Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. Cleanup beyond the run-owned scope requires separate authority.
 
 ## Review Rules
 
