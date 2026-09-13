@@ -259,6 +259,14 @@ End implementer prompts by asking for a proposed commit message. When a chunk ID
 
 When the user asks the planner for a commit message, output a one-line commit message. If multiple sentence-like clauses are needed, separate them with semicolons.
 
+## Planning Checkpoint Before Orchestration
+
+At the final handoff to start orchestration, verify that the reviewed planning package is committed. Do not interrupt ordinary plan/checklist/prompt-map drafting or review with checkpoint requests. Finish the requested documents and applicable checks first, then inspect the exact staged, unstaged and untracked planning changes. If a checkpoint is missing and no applicable authorization exists, identify the proposed files and one-line commit message, explain that the planning baseline is uncommitted, and ask whether to commit it before orchestration. The handoff may be prepared, but must not claim this boundary is resolved while the answer is pending.
+
+Reuse explicit planning-checkpoint authorization already granted; otherwise ordinary planning work or permission to start orchestration does not itself authorize that commit. Keep planning-document authorization separate from the implementation-chunk commit policy: neither implies the other. Commit only reviewed planning changes within the authorized scope, preserving unrelated changes, and verify the resulting commit covers the intended baseline. Report its commit ID with the final handoff; no document needs to embed its own commit hash.
+
+Respect explicit instructions to leave the planning package uncommitted. Record that disposition and the baseline commit plus relevant uncommitted planning files in the handoff so the orchestrator can verify the actual inputs. Do not repeatedly ask for a checkpoint already made, authorized or explicitly waived; unrelated dirty files do not by themselves require another commit.
+
 ## Orchestrator Handoff Prompts
 
 When asked to write, produce, or prepare an orchestrator prompt, treat it as an official durable handoff artifact, not casual chat output.
@@ -276,6 +284,7 @@ Every orchestrator prompt must include:
 - prompt output directory or naming convention
 - validation expectations
 - commit policy
+- planning checkpoint status: verified baseline or explicit uncommitted disposition under **Planning Checkpoint Before Orchestration**
 - cleanup authority: explicit scope/source, or not authorized; required retention and resource handoff
 - stopping conditions
 
