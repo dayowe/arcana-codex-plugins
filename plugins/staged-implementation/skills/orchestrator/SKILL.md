@@ -48,12 +48,12 @@ Before delegating implementation, run a readiness preflight:
 
 1. Establish current state.
    - Read project instructions first.
-   - Read the plan, checklist, prompt map, recent review notes, and relevant git/worktree state.
+   - Establish context from the plan, checklist, prompt map, current handoff/review and relevant git/worktree state. On continuation, read changed instructions/contracts and affected scope rather than reloading unchanged history.
    - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
-   - Inspect every chunk and classify it as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`.
+   - Initially classify every chunk as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`. Subsequently verify affected entries/dependencies; broaden when a shared contract changes or applicability is uncertain.
    - Surface all contract blockers and small freezes to the user before implementation starts.
    - Stop if any `blocked-by-contract-decision` item remains unresolved, unless the user explicitly authorizes implementing only the `ready` subset while blocked chunks remain held.
-   - Stop if a `needs-small-freeze-before-prompt` item affects the next implementation path and cannot be resolved from written docs.
+   - Hold the affected chunk and dependents if a required engineering freeze cannot be resolved from written docs; apply **Stopping Conditions** to any independent continuation.
 
 For each authorized ready chunk:
 
@@ -81,25 +81,27 @@ For each authorized ready chunk:
    - Save or update review outcomes beside the companion plan/checklist when the run is maintaining staged workflow artifacts.
 
 6. Handle review outcome.
-   - If contract ambiguity exists, stop and identify the exact missing decision.
+   - If contract ambiguity exists, hold the affected chunk and identify the exact missing decision; apply **Stopping Conditions** before continuing other work.
    - If implementation violates the prompt or frozen contracts and the docs are clear, write a surgical follow-up prompt.
    - Send the follow-up to the same implementer sub-agent when continuity helps; spawn a new implementer if a fresh pass is safer.
    - Repeat review/follow-up until accepted, blocked, or stopped by the user.
 
 7. Validate when evidence is required.
    - Run direct validation yourself for simple build, test, or diff checks.
+   - Keep direct checks on the same stable-candidate/provenance boundary required below for delegated validation.
    - Invoke `$validator` for feature acceptance, regression, contract, UI/browser, runtime, API, device, or integration evidence when a separate validation pass would reduce risk.
-   - Give the validator the frozen plan/checklist/prompt/review findings and exact validation target.
+   - Give the validator the exact target, applicable frozen requirements, findings and evidence limits; avoid unrelated planning/history context.
    - Treat validator results as evidence for the orchestrator's acceptance decision, not as acceptance by themselves.
 
 8. Accept the chunk.
-   - Confirm required validation passed or that the user accepted the validation gap.
+   - Confirm required validation passed under the current recorded acceptance contract; handle explicit user-approved exceptions under **Commit Rules**, never as fabricated PASS evidence.
+   - Recheck that the candidate source/diff and relevant build still match the reviewed/validated identity; changes invalidate affected evidence until reconciled and revalidated.
    - Confirm no out-of-scope work remains.
    - Apply the explicit commit policy.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
 
 9. Continue.
-   - Update or report checklist, prompt-map, readiness-audit, and review-outcome state as appropriate.
+   - Update one live handoff and the chunk's current outcome; update checklist/map/readiness entries when their state/dependencies change, without copying the running journal into each artifact.
    - Choose the next ready chunk.
    - Stop when all chunks are complete, blocked, or no ready chunk remains.
 
@@ -107,7 +109,7 @@ For each authorized ready chunk:
 
 The readiness audit exists to resolve blockers before implementation, not during the first failed prompt.
 
-For every chunk, record:
+Record each chunk's ID and readiness classification. For non-ready chunks, record the applicable details below; reuse a shared blocker entry for affected chunks rather than duplicating its analysis. Dependency-only holds need the missing predecessor and acceptance link, not an options essay.
 
 - chunk ID/name
 - readiness classification: `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`
@@ -119,10 +121,12 @@ For every chunk, record:
 
 Before implementation starts, require one of:
 
-- all contract blockers and small freezes are resolved and written back into the plan/checklist/prompt map
-- or the user explicitly authorizes a ready-subset run while blocked chunks remain held
+- contract blockers are resolved and the intended chunk's required engineering freezes are recorded in authoritative artifacts
+- or the user explicitly authorizes a ready-subset run while unrelated contract-blocked chunks remain held
 
-Do not spawn implementer sub-agents for blocked chunks. Do not let the implementer resolve parent-route semantics, API contract choices, persistence semantics, timestamp timebases, ownership boundaries, cleanup semantics, or other frozen-contract decisions.
+Complete later mechanism freezes before their first dependent chunk; independent ready work need not await every later implementation detail. Investigate major feasibility/irreversible risks early. Do not spawn implementers for blocked chunks or let them decide missing parent-route, API, persistence, timebase, ownership or cleanup contracts.
+
+Bound further investigation by a question and an observation that distinguishes mechanisms. When equivalent experiments cannot resolve missing contract, access or authority, record one focused decision/blocker and continue only independently authorized ready work.
 
 ## Prompt Writing Rules
 
@@ -166,7 +170,7 @@ In the final summary, include a contract verification matrix and explicitly conf
 Keep the implementer `Read these first:` list focused:
 
 - include project instruction/context docs required by the repo
-- include the feature plan
+- include relevant feature-plan sections, not unrelated phases/history
 - include the implementation checklist only when it adds chunk-relevant boundaries or state not restated in the prompt
 - include chunk-specific docs/artifacts the implementer actually needs
 - do not include the prompt map by default
@@ -183,20 +187,34 @@ When spawning an implementer sub-agent:
 - instruct it to edit files directly if the runtime supports sub-agent code edits
 - instruct it not to commit
 - keep the task narrow and self-contained
+- where supported, use scoped context instead of a full-history fork, carrying all applicable instructions, authority and contract references; preserve model/effort choices
 - avoid delegating planner/reviewer decisions
 - wait only when the result is needed for the next critical-path step
 - close sub-agents when their chunk is accepted or permanently blocked
 
-If sub-agent edits are not visible in the main workspace after completion, stop and report the integration limitation instead of reviewing a summary as if it were a diff.
+If sub-agent edits are not inspectable as the actual candidate diff, hold that chunk and report the integration limitation instead of reviewing a summary as if it were a diff. Apply **Stopping Conditions** before continuing other work.
 
 When invoking a validator pass:
 
 - instruct it to use `$validator`
-- provide the exact expected behavior, frozen contracts, and validation target
+- provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
+- release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
 - ask for pass/fail/blocked evidence, residual risk, and untested areas
 - do not ask the validator to edit production code or commit
 - review the validator's evidence before accepting the chunk
+
+Use lightweight provenance sufficient to identify what was tested, such as a scoped diff/input digest and build identifier; do not require exhaustive repository/dependency hashing by default. If relevant inputs change during a pass, stop affected validation, preserve the old evidence with its limits, and establish the corrected candidate before revalidation. Non-overlapping work is safe only when it cannot alter those inputs, target or results.
+
+## Review and Validation Effort
+
+Keep roles distinct: implementer self-audit; parent actual-diff/integration/contract review; validator independent checks of assigned behavior/risks. Do not automatically add a general reviewer for each correction. Reuse a validator for bounded corrections while context remains valid; a changed mechanism, disputed finding, new risk or explicit gate may require a fresh challenge. All mandated independent reviews remain required.
+
+For corrections, put a short impact note in the existing prompt/review: changed behavior/files, affected consumers, reruns and proposed evidence reuse. Reuse only after verifying relevant source, harness, dependencies, build configuration and environment match, preserving original limits. A commit ID alone is insufficient. Rerun if applicability is uncertain; shared owners/styles may affect many consumers. Required fresh checks cannot be skipped.
+
+Use automation for repeatable regression/mechanical checks and browser inspection for relevant visual/focus behavior and discrepancies. Do not automatically repeat the full matrix with every tool. Retain each required case at its assigned evidence layer/gate. Matching builds/evidence satisfy a requirement only when it permits reuse; later platform/device checks remain pending until observed. Never silently rewrite acceptance to avoid a blocker.
+
+Report concise results, failures and evidence paths; retain raw logs/artifacts and inspect unexpected output. Link evidence instead of duplicating logs/galleries across reviews. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
 
 ## Review Rules
 
@@ -256,21 +274,24 @@ For `do-not-commit`:
 - do not commit
 - report the proposed one-line commit message for each accepted chunk
 
+If the user explicitly approves a validation exception, first record its exact scope, residual risk and missing evidence as a change to the acceptance contract. It is not a PASS for the omitted check, does not waive other gates, and cannot override higher-priority safety/authority constraints. Efficiency or permission to continue working is not such an exception.
+
 Before committing:
 
 - inspect the diff
+- recheck the exact changes to be committed and relevant build against the accepted candidate identity; exclude held/unrelated work and resolve any affected evidence mismatch before committing
 - confirm the reviewed chunk is acceptable
-- confirm validation passed or that the user accepted the validation gap
+- confirm required validation passed under the current recorded acceptance contract
 - confirm no unrelated changes are included
 - use a one-line commit message
 - preserve the chunk ID prefix when one exists
 - separate sentence-like clauses with semicolons when needed
 
-Do not commit if:
+Do not commit the target chunk if:
 
 - review findings remain
 - a contract ambiguity is unresolved
-- required validation failed or could not run
+- validation required by that acceptance contract failed or could not run
 - unrelated dirty changes cannot be separated safely
 - the commit policy is `do-not-commit`
 - the commit policy is `ask-before-each-commit` and the user has not approved that specific commit
@@ -278,18 +299,18 @@ Do not commit if:
 
 ## Stopping Conditions
 
-Stop and report clearly when:
+Hold the affected chunk and its dependents, leaving them unaccepted, when:
 
-- commit authority remains unresolved after checking current instructions and still-applicable authorization
 - a contract, symbol, endpoint or data source is ambiguous, or a required output location remains unresolved after checking instructions and established conventions
 - the plan/checklist/prompt map disagree and the correct contract cannot be inferred from written docs
-- the readiness audit has unresolved `blocked-by-contract-decision` items and the user has not authorized a ready-subset run
 - a `needs-small-freeze-before-prompt` decision affects the next implementation path
 - implementation needs scope widening
-- validation cannot run and the risk cannot be resolved locally
+- required validation fails or cannot run at that chunk's assigned gate
 - sub-agent changes are not inspectable as an actual diff
-- no ready chunks remain
-- all chunks are complete
+
+Record the blocker and preserve held work/evidence. Continue independent ready work only under existing authorization and after verifying it neither depends on the held implementation nor changes the validated scope, build/test inputs or shared runtime state. Separate its acceptance and commit from held work. Different filenames alone do not establish independence; when safe separation is unproven, hold that candidate too.
+
+Stop the entire run and report when the user pauses/stops it, required run authority remains unresolved, a global safety/integrity issue prevents safe work, or no safe authorized ready chunk remains (including completion). Unresolved contract decisions still require explicit ready-subset authorization to continue unaffected work. A chunk-specific environment/validation hold alone does not cancel an otherwise authorized run; it never waives the blocked requirement.
 
 ## Final Response
 
