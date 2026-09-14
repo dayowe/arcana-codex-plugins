@@ -54,6 +54,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - Never revert unrelated dirty changes.
 
 5. Validate.
+   - Before expensive checks, preflight working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; reuse verified setup and recheck changed or uncertain assumptions. Derive intended assertions from frozen contracts and use source for implementation facts; investigate disagreement rather than making tests mirror a defect. Reuse applicable harness/verification helpers and candidate input records; create only the smallest missing helper when needed. Preflight does not replace behavioral tests.
    - Run the validation commands requested in the prompt when feasible.
    - Run targeted additional checks only when they directly reduce risk for the edited surface.
    - For corrections, identify affected behavior/consumers and rerun affected checks. Reuse evidence only when the assignment permits it and relevant inputs still match; retain original limits. Rerun if applicability is uncertain. Never skip a required fresh check or broaden into unrelated matrices/harnesses.
@@ -70,7 +71,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 
 7. Report results.
    - Summarize changed files and behavior.
-   - Distinguish fresh validation from verified reused evidence; give results/artifact paths instead of repeating full logs. Retain raw evidence and inspect failures/unexpected output.
+   - Distinguish fresh validation from verified reused evidence; give concise differences, counts, failures, skipped cases/limits and artifact paths instead of repeating unchanged inventories or full logs. Retain raw evidence and prior candidate provenance; inspect failures/unexpected output. Briefly explain recurring setup failures or repeated checks in this report. Apply process improvements prospectively without repackaging historical evidence.
    - Hand off owned temporary paths, active processes, retained evidence/recovery needs and disposable candidates to the parent. Do not remove a build/check-out needed by validation or a later gate merely because implementation ended.
    - List blockers, ambiguities, or residual risk.
    - Include the requested contract verification matrix for contract-heavy chunks.

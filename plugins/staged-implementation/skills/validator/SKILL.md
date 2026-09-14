@@ -53,13 +53,14 @@ Follow the assigned acceptance level: local implementation, integration, or actu
    - Read project instructions first.
    - Read the assigned requirements, relevant plan/checklist sections, prompt, findings and changed-surface context; expand when dependencies or applicability are unclear, not to repeat unrelated planning audits.
    - Identify the exact behavior and contracts to validate.
-   - Verify the candidate's baseline/scoped changes, relevant test/build inputs and build/artifact provenance. Confirm writes to that scope and replacement of the target are held for the pass; do not assume a URL or HEAD alone identifies what is being tested.
+   - Independently verify the candidate's baseline/scoped changes, relevant test/build inputs and build/artifact provenance. Reuse applicable verification helpers and a canonical candidate input record without trusting their scope or a previous verdict unexamined; do not rebuild evidence machinery per worker. Confirm writes to that scope and replacement of the target are held for the pass; do not assume a URL or HEAD alone identifies what is being tested.
 
 2. Create a validation plan.
    - List the validation items.
    - Separate happy paths, negative paths, edge cases, and contract checks.
    - Identify tools to use: build/test commands, API calls, browser tools, logs, screenshots, device/runtime checks.
    - State any preconditions, such as running server, seeded data, credentials, hardware, or env vars.
+   - Before expensive execution, cheaply verify working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; recheck changed or uncertain setup thereafter. Intended outcomes come from frozen contracts; source establishes implementation facts, not an oracle that may copy defects into assertions. Investigate disagreement. Reuse established harnesses and add only the smallest missing helper when justified; preflight is not behavioral validation.
    - Verify any disposable build/test checkout has a complete persistent source candidate, including uncommitted/new files and required local inputs. Put required evidence/recovery artifacts in persistent destinations as produced, not only when reporting; `/tmp` is for reproducible scratch. Do not edit the candidate to repair a storage problem; report it to the parent. After interrupted-work recovery, verify actual candidate identity and rerun affected checks; surviving transcripts or Git metadata do not establish complete recovery.
    - Record owned temporary paths/profiles and their consumers as created. Check target-filesystem headroom before large build/browser installs, copies or captures; hold unsafe allocations. Reuse compatible resources without changing the frozen candidate or breaking isolation.
    - Receive cleanup scope/retention and allocation restrictions explicitly. Coordinate large starts with the parent, account for combined remaining peak usage per filesystem, and recheck after substantial allocations. Defaults unless explicitly overridden: below 5 GiB free report/serialize large allocations; 2 GiB or less pause write-heavy work and report. Keep projected free space above the critical reserve; without a parent, account for known competing allocations and serialize when uncertain.
@@ -74,13 +75,13 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 
 4. Capture evidence.
    - Record commands or tools used.
-   - Summarize results/failures and artifact paths; retain full logs and inspect unexpected output. Distinguish newly run checks from verified reused evidence with its original limitations.
+   - Summarize differences, counts, failures, skipped/not-tested cases, limits and artifact paths; retain full logs and inspect unexpected output. Link applicable canonical input records rather than regenerating/reproducing unchanged inventories. Preserve prior candidate provenance and distinguish newly run checks from verified reused evidence. Briefly explain recurring setup failures or repeated checks in the existing report; apply improvements prospectively without repackaging historical evidence.
    - Capture screenshots only when they support the verdict.
    - Note relevant console errors, network failures, logs, or API responses.
    - Do not print secrets, tokens, passwords, or sensitive env values.
 
 5. Report verdict.
-   - Recheck candidate identity before reporting. If relevant inputs changed during validation, stop the affected checks, notify the parent and qualify old evidence; do not claim it validates the changed candidate. Resume affected validation only after a stable candidate is established.
+   - Establish candidate identity remains valid before reporting. Entry verification may cover this adjacent boundary when controlled ownership and applicable change checks demonstrate unchanged relevant source/inputs/build; do not automatically repeat full scans. Mutation, interruption that makes continuity uncertain or other identity uncertainty requires renewed verification. If relevant inputs changed, stop affected checks, notify the parent and qualify old evidence; resume only after a stable candidate is established. Prior-agent assurances alone do not establish continuity.
    - Mark each validation item as pass, fail, blocked, or not tested.
    - Explain failures with concrete observed behavior.
    - State residual risk and untested areas.

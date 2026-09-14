@@ -1,6 +1,6 @@
 {
   "name": "staged-implementation",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Planner, implementer, validator, and orchestrator skills for staged implementation workflows.",
   "author": {
     "name": "Local developer"
