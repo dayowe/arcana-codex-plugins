@@ -98,7 +98,7 @@ For each authorized ready chunk:
 
 8. Accept the chunk.
    - Confirm required validation passed under the current recorded acceptance contract; handle explicit user-approved exceptions under **Commit Rules**, never as fabricated PASS evidence.
-   - Recheck that the candidate source/diff and relevant build still match the reviewed/validated identity; changes invalidate affected evidence until reconciled and revalidated.
+   - Establish that candidate source/diff and relevant build still match the reviewed/validated identity, reusing verified continuity under the provenance rule below where applicable; changes invalidate affected evidence until reconciled and revalidated.
    - Confirm no out-of-scope work remains.
    - Apply the explicit commit policy.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
@@ -212,17 +212,19 @@ When invoking a validator pass:
 - do not ask the validator to edit production code or commit
 - review the validator's evidence before accepting the chunk
 
-Use lightweight provenance sufficient to identify what was tested, such as a scoped diff/input digest and build identifier; do not require exhaustive repository/dependency hashing by default. If relevant inputs change during a pass, stop affected validation, preserve the old evidence with its limits, and establish the corrected candidate before revalidation. Non-overlapping work is safe only when it cannot alter those inputs, target or results.
+Use lightweight provenance sufficient to identify what was tested, such as a scoped diff/input digest and build identifier; do not require exhaustive repository/dependency hashing by default. Establish identity at validation entry. Verification can cover adjacent reporting, acceptance and commit boundaries when controlled ownership and applicable change checks demonstrate unchanged source, relevant inputs and build; a prior agent's claim alone is insufficient. Do not automatically rescan full inventories at every boundary. Mutation, interruption that makes continuity uncertain, or other identity uncertainty requires renewed verification. If relevant inputs change during a pass, stop affected validation, preserve the old evidence with its limits, and establish the corrected candidate before revalidation. Non-overlapping work is safe only when it cannot alter those inputs, target or results.
 
 ## Review and Validation Effort
 
 Keep roles distinct: implementer self-audit; parent actual-diff/integration/contract review; validator independent checks of assigned behavior/risks. Do not automatically add a general reviewer for each correction. Reuse a validator for bounded corrections while context remains valid; a changed mechanism, disputed finding, new risk or explicit gate may require a fresh challenge. All mandated independent reviews remain required.
 
+Reuse reliable verification helpers and a canonical candidate-scoped input record where useful; verify their coverage/applicability rather than rebuilding them per worker. Keep prior candidate provenance intact when inputs change, and keep concurrent candidates separate. Create only the smallest missing helper when justified, not a mandatory evidence framework. Before expensive checks, preflight relevant paths, tool versions, generated prerequisites and file-type/symlink handling. Recheck changed or uncertain setup; preflight does not replace behavioral assertions. Validators independently verify inputs and expected outcomes against the frozen contract, not an unexamined helper or previous verdict.
+
 For corrections, put a short impact note in the existing prompt/review: changed behavior/files, affected consumers, reruns and proposed evidence reuse. Reuse only after verifying relevant source, harness, dependencies, build configuration and environment match, preserving original limits. A commit ID alone is insufficient. Rerun if applicability is uncertain; shared owners/styles may affect many consumers. Required fresh checks cannot be skipped.
 
 Use automation for repeatable regression/mechanical checks and browser inspection for relevant visual/focus behavior and discrepancies. Do not automatically repeat the full matrix with every tool. Retain each required case at its assigned evidence layer/gate. Matching builds/evidence satisfy a requirement only when it permits reuse; later platform/device checks remain pending until observed. Never silently rewrite acceptance to avoid a blocker.
 
-Report concise results, failures and evidence paths; retain raw logs/artifacts and inspect unexpected output. Link evidence instead of duplicating logs/galleries across reviews. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
+Report concise differences, counts, failures, skipped/not-tested obligations, evidence limits and artifact paths; retain raw logs/artifacts and inspect unexpected output. Link any existing canonical input record and detailed results instead of regenerating/reproducing unchanged inventories, hashes or packages. Apply process improvements prospectively; do not reorganize historical evidence merely to match a new convention. Briefly record causes of recurring setup failures or reasons for repeated checks in the existing report, not a new tracking system. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
 
 ## Persistent Workspaces
 
@@ -252,7 +254,7 @@ Before releasing an evidence-bearing workspace, preserve the required artifacts 
 
 Use the run's bounded cleanup scope, carried into each assignment. Check each exact path is run-owned and within that scope, with no active process/validator, retained artifact or pending consumer depending on it. Release owned processes/handles before removal, respecting pauses and operational authority. Do not traverse symlinks/mounts into unrelated locations, clear `/tmp` broadly, delete by wildcard/prefix, or prune shared caches, files predating the run, user files or resources belonging to other runs. Worker resources may be cleaned by the parent after a recorded ownership handoff, subject to the same authorization and release checks; resources still owned by another worker remain protected. Use the owning tool's safe lifecycle for managed resources such as Git worktrees, without forced removal of uncommitted work. If ownership, retention or authority is unclear, keep the resource and ask with concrete paths/reasons.
 
-Perform eligible cleanup at the lifecycle boundaries above, including run completion, rather than waiting for disk pressure. Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. Cleanup beyond the run-owned scope requires separate authority.
+Perform eligible cleanup at the lifecycle boundaries above, including run completion, rather than waiting for disk pressure. After accepted integration, explicitly resolve redundant candidate/build copies: verify persistent source/evidence preservation, rollback needs and consumer release, then remove eligible copies or record a specific retention reason and release condition. An evidence archive alone does not establish disposability; uncommitted work remains protected. Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. Cleanup beyond the run-owned scope requires separate authority.
 
 ## Review Rules
 
@@ -316,8 +318,8 @@ If the user explicitly approves a validation exception, first record its exact s
 
 Before committing:
 
-- inspect the diff
-- recheck the exact changes to be committed and relevant build against the accepted candidate identity; exclude held/unrelated work and resolve any affected evidence mismatch before committing
+- inspect the exact staged diff against the accepted scope, including the absence of held/unrelated work
+- establish that staged content and relevant build match the accepted candidate identity; verified continuity may cover adjacent boundaries without another full inventory/hash scan or test run, but never replaces staged-diff inspection. Renew verification when identity is uncertain and resolve affected evidence mismatches before committing
 - confirm the reviewed chunk is acceptable
 - confirm required validation passed under the current recorded acceptance contract
 - confirm no unrelated changes are included
