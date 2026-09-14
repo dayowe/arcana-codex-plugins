@@ -52,7 +52,8 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 1. Read context.
    - Read project instructions first.
    - Read the assigned requirements, relevant plan/checklist sections, prompt, findings and changed-surface context; expand when dependencies or applicability are unclear, not to repeat unrelated planning audits.
-   - Identify the exact behavior and contracts to validate.
+   - Independently verify any supplied checklist against authoritative requirements; reuse complete requirement IDs, add omissions or create a checklist only if needed. Check obligations outside it and keep this pass's findings/evidence attributable separately from implementer results.
+   - Use targeted searches/relevant file sections and programmatic extraction from large logs/JSON; expand to full files/raw evidence whenever needed. Do not repeatedly load unchanged inventories, histories or successful logs merely to restate them.
    - Independently verify the candidate's baseline/scoped changes, relevant test/build inputs and build/artifact provenance. Reuse applicable verification helpers and a canonical candidate input record without trusting their scope or a previous verdict unexamined; do not rebuild evidence machinery per worker. Confirm writes to that scope and replacement of the target are held for the pass; do not assume a URL or HEAD alone identifies what is being tested.
 
 2. Create a validation plan.
@@ -67,6 +68,7 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 
 3. Execute validation.
    - Use the real target when runtime behavior matters.
+   - Batch compatible independent checks and inspect every result. Preserve each underlying operation's exit status and distinguish success, failure, timeout, cancellation and unexecuted work. Tests sharing ports, fixtures, generated files or build destinations stay sequential unless isolated; preserve candidate-freeze and allocation rules. A filter/parser's success or absence of error text is not proof of execution success. Surface incomplete output/parser failures and inspect relevant raw evidence.
    - For UI validation, check visible state, relevant interactions, console output, and network/API requests.
    - For API validation, check status codes, response shape, error codes, auth behavior, and persistence side effects as specified.
    - For build/test validation, run the narrowest commands that cover the risk.
@@ -88,7 +90,9 @@ Follow the assigned acceptance level: local implementation, integration, or actu
    - Do not claim acceptance beyond what was validated.
    - Release owned runtime resources as authorized and hand off retained/disposable paths with reasons. Confirm required evidence remains accessible at its recorded durable location before its temporary workspace is removed; preserve failure identity and pending-gate/recovery needs.
 
-For a correction/revalidation, independently verify the change's impact and reuse only permitted evidence whose relevant source, harness, dependencies, build configuration and environment still match. Do not trust the implementer's PASS alone. Rerun affected checks, new failure cases and explicitly required fresh checks; rerun when applicability is uncertain. Preserve original failed evidence and avoid recreating unchanged reports/galleries. Shared-owner changes may require broader coverage.
+For a correction/revalidation, verify the original assignment/current candidate and independently assess the delta; reuse only permitted evidence whose relevant source, harness, dependencies, build configuration and environment still match. Do not trust the implementer's PASS alone. Rerun affected checks, new failure cases and explicitly required fresh checks; rerun when applicability is uncertain. Preserve original failed evidence without recreating valid matrices, setup audits or report packages. Shared-owner changes may require broader coverage.
+
+Complete assigned routine checks without repeated parent acknowledgements; promptly report blockers/material findings and coordinate candidate release, shared resources, scope changes and approvals. A completion notice does not release a workspace. Preserve required user updates. Correctness and acceptance obligations take priority over token savings.
 
 ## Browser/UI Validation
 
@@ -146,30 +150,32 @@ When invoked after implementation:
 
 ## Final Response Shape
 
-Use this structure:
+Use this compact structure, omitting empty optional sections. Keep blocking findings, missing evidence and resource disposition visible; link detailed matrices/results unless explicitly requested in full. Verify links exist and are accessible. This report supports parent review; it does not replace actual-diff review or acceptance.
 
 ```text
 Verdict:
 - pass | fail | blocked | partial
 
+Candidate:
+- baseline/scoped changes and relevant build identity
+
 Validated:
-- item: result, evidence
+- fresh/reused results and evidence links
 
 Not validated:
-- item: reason
+- missing/failed-to-run obligations and reasons
 
 Evidence:
-- commands/tools used
-- screenshots/logs/network observations where relevant
+- accessible detailed results, matrices and relevant logs/captures
 
 Failures:
-- what failed
-- where it failed
-- why it matters
-- whether the expected behavior is clear enough to fix without guessing
+- what/where, consequence and whether the contract is clear enough to fix
 
 Residual risk:
 - remaining risk or coverage gaps
+
+Resources:
+- owned paths/consumers and retention or release needs
 
 Recommendation:
 - accept | follow-up prompt needed | clarify contract | rerun with missing dependency
