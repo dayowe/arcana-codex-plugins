@@ -120,6 +120,8 @@ Do not create separate prompts just because a second file is touched, a helper i
 
 Give each artifact one job: plan = architecture/rationale; checklist = work/dependencies/acceptance; prompt map = assignment routing/inputs; prompt = bounded execution pass. Link authoritative contracts or restate the exact applicable subset instead of copying whole contracts into every artifact. Preserve all applicable obligations and make them accessible to a fresh worker.
 
+Efficiency changes organization and communication, not what must be understood, implemented or proven. Required correctness and acceptance obligations take priority over token savings; do not impose token/turn caps that force incomplete work.
+
 Design validation alongside chunk boundaries. Assign each obligation to the first gate that needs it: local implementation, integrated behavior, or actual platform/device/release. Record its target and prerequisites. Do not require later release evidence before a local chunk unless correctness or safe activation depends on it. An unavailable mandatory check remains pending at its assigned gate; emulation/local success cannot pass that gate.
 
 Prefer existing tests/harnesses and the smallest validation surface that credibly proves the contract. Plan a cheap setup preflight before expensive validation: working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; subsequently recheck changed or uncertain assumptions. Intended test outcomes come from frozen contracts; source establishes implementation facts, not permission to copy a defect into the expected result. Investigate disagreement. Expand for shared-owner impact or newly found risk. Do not prescribe every appearance × viewport × state combination, another harness or another general review without a coverage need. Retain required integration/independent review and any explicitly mandated matrix or fresh run unless expressly amended.
@@ -215,6 +217,7 @@ Keep the implementer `Read these first:` list focused:
 - include relevant feature-plan sections, not unrelated phases/history
 - include the implementation checklist only when it adds chunk-relevant boundaries or state not restated in the prompt
 - include chunk-specific docs/artifacts the implementer actually needs
+- identify the current authoritative reading path, including any still-binding amendments; keep historical evidence accessible without routinely loading superseded narratives. Expand inspection when dependencies or findings require it.
 - do not include the prompt map by default; it is mainly a planner/reviewer sequencing artifact
 - do not include planner/reviewer process docs by default
 - do not list the prompt file itself in its own `Read these first:` block
@@ -252,9 +255,9 @@ Every implementer prompt must carry these default requirements unless the task p
 For contract-heavy chunks, add a contract checklist and self-audit requirement:
 
 ```text
-Before coding, extract the explicit MUST / invariant / field / response-shape / event / error-mapping requirements into a concrete checklist.
-After coding, audit the actual diff against that checklist before finishing.
-In the final summary, include a contract verification matrix and explicitly confirm no out-of-scope work was included.
+Before coding, verify an existing applicable checklist against authoritative MUST / invariant / field / response-shape / event / error-mapping requirements. Reuse it when complete; add missing requirements or create a checklist if none is suitable.
+After coding, audit the actual diff against those requirements. Shared requirement IDs do not merge implementer and independent-validator findings/evidence; keep each pass attributable and investigate obligations outside the checklist.
+Keep the contract verification matrix in durable evidence and link it in the final summary, with blocking findings, missing evidence and scope deviations visible. Include the full matrix in the response if explicitly requested; verify linked artifacts exist and are accessible.
 ```
 
 End implementer prompts by asking for a proposed commit message. When a chunk ID exists, require the commit message to start with that chunk ID prefix.

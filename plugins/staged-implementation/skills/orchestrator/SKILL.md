@@ -166,9 +166,9 @@ Every implementer prompt must require:
 For contract-heavy chunks, require:
 
 ```text
-Before coding, extract the explicit MUST / invariant / field / response-shape / event / error-mapping requirements into a concrete checklist.
-After coding, audit the actual diff against that checklist before finishing.
-In the final summary, include a contract verification matrix and explicitly confirm no out-of-scope work was included.
+Before coding, verify an existing applicable checklist against authoritative MUST / invariant / field / response-shape / event / error-mapping requirements. Reuse it when complete; add missing requirements or create a checklist if none is suitable.
+After coding, audit the actual diff against those requirements. Shared requirement IDs do not merge implementer and independent-validator findings/evidence; keep each pass attributable and investigate obligations outside the checklist.
+Keep the contract verification matrix in durable evidence and link it in the final summary, with blocking findings, missing evidence and scope deviations visible. Include the full matrix in the response if explicitly requested; verify linked artifacts exist and are accessible.
 ```
 
 Keep the implementer `Read these first:` list focused:
@@ -177,11 +177,16 @@ Keep the implementer `Read these first:` list focused:
 - include relevant feature-plan sections, not unrelated phases/history
 - include the implementation checklist only when it adds chunk-relevant boundaries or state not restated in the prompt
 - include chunk-specific docs/artifacts the implementer actually needs
+- identify the current authoritative reading path, including any still-binding amendments; keep historical evidence accessible without routinely loading superseded narratives. Expand inspection when dependencies or findings require it.
 - do not include the prompt map by default
 - do not include planner/reviewer/orchestrator process docs
 - do not list the prompt file itself in its own `Read these first:` block
 
 ## Delegation Rules
+
+For new implementer and independent-validator assignments, default to fresh scoped context without full parent-history inheritance when supported; explicitly select the supported no-history setting rather than relying on tool defaults. Carry the task, applicable instructions/contracts, candidate identity, source locations, known findings, dependencies, validation obligations and authority. Context selection is separate from model selection: explicitly preserve authorized model/effort through supported controls if changing context mode changes defaults; never silently substitute a configuration for smaller context. If scoped context is unavailable, use supported controls while preserving required independence and obligations. Reuse an appropriate worker for bounded same-assignment corrections; use a fresh worker when independence, persistent misunderstanding or stale context warrants it, not because a fixed context threshold was crossed.
+
+Dispatch complete bounded assignments so workers can finish already-authorized routine steps without acknowledgement chatter. Coordinate candidate release, shared-resource acquisition, scope changes and required approvals explicitly; a completion notification does not release a workspace. Prefer completion notifications or interruptible waits, with proportionate polling when necessary. Preserve required user updates and immediate blocker/material-finding reports; do not add a permanent monitoring loop or wait so long that intervention is prevented.
 
 When spawning an implementer sub-agent:
 
@@ -191,7 +196,6 @@ When spawning an implementer sub-agent:
 - instruct it to edit files directly if the runtime supports sub-agent code edits
 - instruct it not to commit
 - keep the task narrow and self-contained
-- where supported, use scoped context instead of a full-history fork, carrying all applicable instructions, authority and contract references; preserve model/effort choices
 - assign the verified persistent source workspace and evidence destinations; workers must not relocate implementation into disposable storage
 - pass cleanup scope, retention requirements and disk/allocation restrictions; require workers to report exact owned resource paths and outstanding consumers on handoff
 - avoid delegating planner/reviewer decisions
@@ -216,13 +220,17 @@ Use lightweight provenance sufficient to identify what was tested, such as a sco
 
 ## Review and Validation Effort
 
+Efficiency changes organization and communication, not what must be understood, implemented or proven. Required correctness and acceptance obligations take priority over token savings; do not impose token/turn caps that force incomplete work.
+
 Keep roles distinct: implementer self-audit; parent actual-diff/integration/contract review; validator independent checks of assigned behavior/risks. Do not automatically add a general reviewer for each correction. Reuse a validator for bounded corrections while context remains valid; a changed mechanism, disputed finding, new risk or explicit gate may require a fresh challenge. All mandated independent reviews remain required.
 
 Reuse reliable verification helpers and a canonical candidate-scoped input record where useful; verify their coverage/applicability rather than rebuilding them per worker. Keep prior candidate provenance intact when inputs change, and keep concurrent candidates separate. Create only the smallest missing helper when justified, not a mandatory evidence framework. Before expensive checks, preflight relevant paths, tool versions, generated prerequisites and file-type/symlink handling. Recheck changed or uncertain setup; preflight does not replace behavioral assertions. Validators independently verify inputs and expected outcomes against the frozen contract, not an unexamined helper or previous verdict.
 
-For corrections, put a short impact note in the existing prompt/review: changed behavior/files, affected consumers, reruns and proposed evidence reuse. Reuse only after verifying relevant source, harness, dependencies, build configuration and environment match, preserving original limits. A commit ID alone is insufficient. Rerun if applicability is uncertain; shared owners/styles may affect many consumers. Required fresh checks cannot be skipped.
+For same-contract corrections, reference the original assignment and current candidate, then send the concrete finding, affected scope, required revalidation and proposed evidence reuse. Do not regenerate valid assignments, matrices, environment audits or evidence packages. A replacement worker needs enough baseline context to interpret the delta. Group coherent findings from the current review when practical, but report urgent safety/contract blockers immediately. Reuse only after verifying relevant source, harness, dependencies, build configuration and environment match, preserving original limits. A commit ID alone is insufficient. Rerun if applicability is uncertain; shared owners/styles may affect many consumers. Required fresh checks cannot be skipped.
 
-Use automation for repeatable regression/mechanical checks and browser inspection for relevant visual/focus behavior and discrepancies. Do not automatically repeat the full matrix with every tool. Retain each required case at its assigned evidence layer/gate. Matching builds/evidence satisfy a requirement only when it permits reuse; later platform/device checks remain pending until observed. Never silently rewrite acceptance to avoid a blocker.
+Use targeted searches/relevant sections and programmatic extraction from large logs/JSON; expand to full files or raw evidence when needed. Avoid repeatedly dumping unchanged documents, inventories or successful logs into model context. Store required full logs durably and return concise results with failures, limitations and paths. Capture the underlying operation's exit status, not only a filter/parser's success; distinguish success, failure, timeout, cancellation and unexecuted work. Incomplete output or parser failure must be surfaced and investigated, never treated as a clean pass.
+
+Batch compatible independent reads/mechanical checks and inspect every result together. Preserve individual statuses; tests sharing ports, fixtures, generated files or build destinations remain sequential unless isolation is established. Keep dependent edits, mutations, approvals and decisions sequential. Apply existing candidate-freeze and disk-allocation rules; do not hide failures inside a large command batch. Use browser inspection for relevant visual/focus behavior and discrepancies rather than automatically repeating the full matrix with every tool. Retain every required case at its assigned gate and all mandated fresh checks; local/reused evidence cannot silently pass a later platform gate.
 
 Report concise differences, counts, failures, skipped/not-tested obligations, evidence limits and artifact paths; retain raw logs/artifacts and inspect unexpected output. Link any existing canonical input record and detailed results instead of regenerating/reproducing unchanged inventories, hashes or packages. Apply process improvements prospectively; do not reorganize historical evidence merely to match a new convention. Briefly record causes of recurring setup failures or reasons for repeated checks in the existing report, not a new tracking system. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
 
