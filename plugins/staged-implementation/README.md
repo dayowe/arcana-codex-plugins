@@ -110,6 +110,7 @@ The usual flow is:
 - The skills are intentionally separate. Keeping the roles separate makes the boundaries clearer and reduces accidental scope widening.
 - `validator` reports evidence and risk. `planner` or `orchestrator` decides whether a chunk is accepted.
 - `orchestrator` may commit accepted chunks only when the user explicitly authorizes commits.
+- Unfinished source, backing Git metadata and required evidence live on persistent storage from creation. Prefer the project's established worktree location; ask once if isolation needs a new location. `/tmp` is for reproducible scratch, never the only copy of unfinished work. Nested worktree paths must be ignored, untracked and protected from broad cleanup.
 - Authorizing orchestration includes routine cleanup of its tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. The handoff states this default; explicit retention/no-deletion instructions override it. Shared caches, unrelated files and resources still needed remain protected.
 - If the same skill names also exist as standalone local skills, Codex may show duplicates. After the plugin is installed and verified, remove or disable the standalone copies if you want only the plugin version.
 

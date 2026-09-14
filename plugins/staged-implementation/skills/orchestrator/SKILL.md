@@ -50,6 +50,7 @@ Before delegating implementation, run a readiness preflight:
 1. Establish current state.
    - Read project instructions first.
    - Establish context from the plan, checklist, prompt map, current handoff/review and relevant git/worktree state. On continuation, read changed instructions/contracts and affected scope rather than reloading unchanged history.
+   - Before delegating edits, establish persistent implementation and evidence locations under **Persistent Workspaces**. On resume, verify the actual candidate files and backing Git metadata before using previous reports or continuing dependent work.
    - Before initial implementation delegation, verify the reviewed planning package against its checkpoint and actual working files. If relevant planning changes remain uncommitted, honor an explicit uncommitted disposition or applicable planning-checkpoint authorization; otherwise finish applicable document checks, identify the exact files and proposed commit, and ask before proceeding. Planning-checkpoint permission and accepted-chunk commit permission are separate. Exclude unrelated changes; do not repeat a resolved checkpoint request or turn routine execution-status updates into a new planning checkpoint gate. Record the verified baseline, including relevant uncommitted inputs when explicitly allowed.
    - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
    - Initially classify every chunk as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`. Subsequently verify affected entries/dependencies; broaden when a shared contract changes or applicability is uncertain.
@@ -191,6 +192,7 @@ When spawning an implementer sub-agent:
 - instruct it not to commit
 - keep the task narrow and self-contained
 - where supported, use scoped context instead of a full-history fork, carrying all applicable instructions, authority and contract references; preserve model/effort choices
+- assign the verified persistent source workspace and evidence destinations; workers must not relocate implementation into disposable storage
 - pass cleanup scope, retention requirements and disk/allocation restrictions; require workers to report exact owned resource paths and outstanding consumers on handoff
 - avoid delegating planner/reviewer decisions
 - wait only when the result is needed for the next critical-path step
@@ -204,6 +206,7 @@ When invoking a validator pass:
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
+- pass persistent evidence/recovery destinations and identify the durable source behind any disposable validation copy
 - pass the run's bounded cleanup scope and any restrictions, retention requirements, disk thresholds and allocation restrictions; require owned-resource handoff
 - ask for pass/fail/blocked evidence, residual risk, and untested areas
 - do not ask the validator to edit production code or commit
@@ -220,6 +223,14 @@ For corrections, put a short impact note in the existing prompt/review: changed 
 Use automation for repeatable regression/mechanical checks and browser inspection for relevant visual/focus behavior and discrepancies. Do not automatically repeat the full matrix with every tool. Retain each required case at its assigned evidence layer/gate. Matching builds/evidence satisfy a requirement only when it permits reuse; later platform/device checks remain pending until observed. Never silently rewrite acceptance to avoid a blocker.
 
 Report concise results, failures and evidence paths; retain raw logs/artifacts and inspect unexpected output. Link evidence instead of duplicating logs/galleries across reviews. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
+
+## Persistent Workspaces
+
+Unfinished source must live on persistent storage from the first edit. Verify resolved workspace paths and backing Git/common-directory storage are not temporary, memory-backed or subject to automatic cleanup; a persistent-looking name or `.git` file alone is insufficient. The current checkout may itself be a worktree. Use it for safe sequential work; use isolated worktrees when delegation/concurrency or candidate isolation requires them. Prefer the project's established persistent worktree location. If none is suitable or already authorized, propose one dedicated location and ask once before creation; do not automatically scatter siblings or use `/tmp` as a fallback. Reuse the chosen location and same-chunk workspace; create only needed worktrees.
+
+Nested worktrees are allowed only when their paths are ignored and untracked in the containing repository. Verify both before creation; do not force-add them. Ignore rules prevent ordinary staging, not deletion: protect worktree containers and shared Git metadata from broad cleanup, including `git clean -fdx`, and never remove a containing checkout while nested worktrees or dependent Git metadata remain needed. Record workspace/common-directory paths, owners and consumers in the existing durable handoff. Preserve unfinished/held candidates; release integrated worktrees only after the existing retention and cleanup checks pass.
+
+Reserve `/tmp` and other disposable storage for reproducible resources. A disposable build/test copy requires a complete persistent source candidate, including staged, unstaged, new/untracked files and required local inputs, with provenance linking the copy to it. No unique implementation edits belong there. Write required evidence and recovery artifacts to persistent destinations as produced, rather than waiting for acceptance or pause. A reboot can happen between handoffs. Persistence does not require premature commits or acceptance. On resume, missing/changed source requires recovery and diff verification before continuation; transcripts/Git metadata are recovery aids, not proof of complete recovery. Reconstructed candidates require applicable revalidation before acceptance.
 
 ## Temporary Resources and Cleanup
 
