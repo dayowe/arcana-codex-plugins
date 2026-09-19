@@ -1,6 +1,8 @@
-# Orchestrator Resource Lifecycle
+# Shared Resource Lifecycle
 
-Read this reference for initial persistence verification before delegating edits, and before creating/reusing worktrees or disposable build/test copies, large builds (including in the main checkout), dependency/browser installations, archives or other substantial allocations, and cleanup/storage recovery. Reuse already-read instructions and verified setup while applicable. The core orchestrator skill remains authoritative for acceptance and worker lifecycle.
+Read this single procedure for initial persistence verification before delegating edits, and before creating/reusing worktrees or disposable build/test copies, large builds (including in the main checkout), dependency/browser installations, archives or other substantial allocations, and cleanup/storage recovery. Reuse already-read instructions and verified setup while applicable. Acceptance and worker lifecycle belong to the execution skills and their shared contract.
+
+In coordinated mode, Coordinator is the run resource owner; Orchestrator is the immediate parent of implementer/validator resources. Orchestrator subdivides its assigned allocation and coordinates increases/shared targets with Coordinator before allocation. Parent duties below apply locally to Orchestrator and globally to Coordinator; reconcile one run ledger without counting a parent reservation and its child allocations twice. Direct Orchestrator performs both duties within its boundary. Resource responsibility survives any worker exit; transfer exact paths, consumers, retained obligations and remaining allocations before the next assignment. A paused/missing parent grants no new cleanup or allocation authority.
 
 ## Persistent Workspaces
 
@@ -12,7 +14,7 @@ Reserve `/tmp` and other disposable storage for reproducible resources. A dispos
 
 ## Temporary Resources and Cleanup
 
-Authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources once the checks below pass. State this default in the handoff and worker assignments; do not require separate cleanup approval within its bounds. Explicit retention/no-deletion instructions and higher-priority restrictions override the default. Reading the skill or doing standalone planning/implementation/validation does not authorize orchestration cleanup. Resources accumulated earlier in the same resumed run qualify only after ownership and release conditions are verified and recorded; unknown ownership or files predating the run do not qualify.
+Authorization to run direct or coordinated orchestration includes routine cleanup of that run's tracked, disposable temporary resources once the checks below pass. State this default in the handoff and worker assignments; do not require separate cleanup approval within its bounds. Explicit retention/no-deletion instructions and higher-priority restrictions override the default. Reading the skill or doing standalone planning/implementation/validation does not authorize orchestration cleanup. Resources accumulated earlier in the same resumed run qualify only after ownership and release conditions are verified and recorded; unknown ownership or files predating the run do not qualify.
 
 Maintain a compact record in the existing handoff of exact run-created paths, purpose/owner, active or future consumers, and release condition. Register resources when created and transfer responsibility when a worker exits; a closed agent does not make its files disposable. On resume, reconcile that record against actual resources before reusing or removing them. Do not infer ownership from a filename prefix, age or location under `/tmp`.
 

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Orchestrator"
-  short_description: "Run planner-implementer-validator chunk loops"
-  default_prompt: "Use $orchestrator to run the staged implementation loop with planner review, implementer sub-agents, and validator evidence."
+  display_name: "Bounded Orchestrator"
+  short_description: "Review and execute one assigned chunk or group"
+  default_prompt: "Use $orchestrator for the assigned chunk or explicitly named group, preserving actual-diff review and independent validation; stop at that boundary."

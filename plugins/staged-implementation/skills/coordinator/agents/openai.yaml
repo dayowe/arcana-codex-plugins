@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coordinator"
+  short_description: "Schedule a run through fresh bounded orchestrators"
+  default_prompt: "Use $coordinator to execute the authorized staged plan through fresh bounded orchestrators, preserving dependencies, acceptance gates and commit authority."

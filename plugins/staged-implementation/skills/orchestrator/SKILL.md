@@ -1,17 +1,21 @@
 ---
 name: orchestrator
-description: "End-to-end staged implementation orchestrator for any codebase. Use when Codex should run a planner-reviewer-implementer-validator loop across chunks: audit readiness and ambiguities before implementation, choose the next prompt from a plan/checklist/prompt map, delegate implementation to a fresh sub-agent using the implementer role, review actual diffs against frozen contracts, invoke validator evidence checks when needed, issue follow-up prompts until accepted or blocked, optionally commit accepted chunks when explicitly authorized, and continue until the checklist is complete."
+description: "Bounded staged implementation lead for one assigned chunk, validation gate or explicitly named coherent group. Delegate scoped implementation, review actual diffs against frozen contracts, obtain independent validation, reconcile corrections, and accept/commit only under explicit authority. Stop at the assignment boundary; use coordinator for run-wide scheduling across a longer checklist."
 ---
 
 # Orchestrator
 
 ## Role
 
-Act as the coordinator for staged implementation work. Own the loop; do not become the implementer unless the user explicitly asks for local implementation.
+Own the complete implementation/review/validation loop for the assigned boundary. Do not become the implementer unless the user explicitly asks for local implementation. Do not independently launch unrelated next chunks or run a whole checklist. Use `$coordinator` for run-wide execution; do not silently reinterpret an older whole-run orchestrator prompt as a bounded assignment.
 
 Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
 
-Use sub-agents only when the user explicitly requests orchestration, delegation, sub-agents, or an automated implementation loop. If sub-agent tools are unavailable, stop and explain that the loop can be run manually with planner/implementer handoffs.
+Read the shared [Execution Contract](../coordinator/references/execution-contract.md). In coordinated mode, the coordinator owns global scheduling/status and run-wide resources; you own chunk prompts, evidence, substantive acceptance and scoped commits. In direct mode, perform the needed run duties yourself only for the explicitly assigned chunk/group. A group names its IDs, order and stopping boundary and preserves individual gates/rollback points.
+
+References to parent review or worker-parent coordination below mean this bounded orchestrator, not an additional review by Coordinator. The coordinator owns only the run-level duties explicitly identified here.
+
+Use subagents when the user has authorized orchestration/delegation directly or through a coordinator carrying that authority. Verify nested tools/capacity and inherited restrictions before dispatch; do not create another coordinator or orchestrator layer. If required tools are unavailable, hold the assignment and report a direct/manual alternative, never omit independent validation or change models as an implicit fallback.
 
 ## Required Inputs
 
@@ -20,7 +24,9 @@ Prefer a task packet containing:
 - repo root
 - project instruction docs, if not discoverable from the repo
 - feature/fix name or slug
-- stable chunk IDs and a run-state/handoff path, or permission to create one beside the plan/checklist
+- explicit assigned chunk/gate IDs and boundary; run/orchestrator assignment identity and direct/coordinated mode
+- current candidate/baseline, protected work, durable evidence and assigned resource ownership/allocation
+- current handoff/readiness references and allowed chunk-record paths; parent identity in coordinated mode
 - plan path
 - implementation checklist path
 - prompt map path
@@ -36,7 +42,8 @@ Resolve and normalize commit authorization under **Commit Rules** before impleme
 
 ## Authority Boundaries
 
-- The orchestrator owns chunk selection, prompt writing, review, follow-up prompts, validation decisions, and commits.
+- The orchestrator owns scoped readiness, prompt writing, actual-diff/integration review, corrections, validation and acceptance/authorized commits for the assigned IDs only.
+- The coordinator selects run-wide work and routes user approvals; send proposed global status/contract updates to it instead of editing shared scheduling records. Direct invocation retains user-facing responsibility within the assigned boundary.
 - Implementer sub-agents own one scoped implementation pass at a time.
 - Implementer sub-agents must not commit.
 - Validator sub-agents or validator passes gather evidence only; they do not decide final acceptance.
@@ -50,19 +57,18 @@ Before delegating implementation, run a readiness preflight:
 
 1. Establish current state.
    - Read project instructions first.
-   - Establish context from the plan, checklist, prompt map, current handoff/review and relevant git/worktree state. On continuation, read changed instructions/contracts and affected scope rather than reloading unchanged history.
+   - Establish scoped context from the assignment, applicable plan/checklist/prompt-map entries, shared invariants, current handoff/review and actual git/worktree state. Verify dependency evidence; do not trust the coordinator's ready label alone. Expand for affected callers/contracts, not unrelated historical narrative.
    - Before delegating edits, establish persistent implementation and evidence locations under **Resource Lifecycle**. On resume, verify the actual candidate files and backing Git metadata before using previous reports or continuing dependent work.
    - Before initial implementation delegation, verify the reviewed planning package against its checkpoint and actual working files. If relevant planning changes remain uncommitted, honor an explicit uncommitted disposition or applicable planning-checkpoint authorization; otherwise finish applicable document checks, identify the exact files and proposed commit, and ask before proceeding. Planning-checkpoint permission and accepted-chunk commit permission are separate. Exclude unrelated changes; do not repeat a resolved checkpoint request or turn routine execution-status updates into a new planning checkpoint gate. Record the verified baseline, including relevant uncommitted inputs when explicitly allowed.
-   - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
-   - Initially classify every chunk as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`. Subsequently verify affected entries/dependencies; broaden when a shared contract changes or applicability is uncertain.
-   - Surface all contract blockers and small freezes to the user before implementation starts.
-   - Stop if any `blocked-by-contract-decision` item remains unresolved, unless the user explicitly authorizes implementing only the `ready` subset while blocked chunks remain held.
+   - Reuse the run readiness audit and verify assigned entries and dependencies. If missing, perform the bounded readiness assessment before prompting; report any missing run-level audit to the coordinator rather than reconstructing the entire plan locally.
+   - Classify affected entries as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`; the coordinator owns global updates. Broaden investigation when a shared contract changes or applicability is uncertain.
+   - Surface missing contracts/freezes before dependent implementation. Hold affected work; ready-subset authority permits only unaffected assigned work, not picking a replacement chunk outside the boundary.
    - Hold the affected chunk and dependents if a required engineering freeze cannot be resolved from written docs; apply **Stopping Conditions** to any independent continuation.
 
-For each authorized ready chunk:
+For each authorized ready unit within the assignment (validation-only gates need no implementer):
 
-2. Select the next chunk.
-   - Identify the next ready chunk from the checklist, prompt map, and readiness audit.
+2. Verify the assigned unit.
+   - Confirm its readiness and order within the explicit assignment against the checklist, prompt map and prerequisites.
    - Verify the chunk has not already landed.
    - Run `git status --short` and relevant `git log --oneline` checks to verify the chosen chunk has not already landed and that the review target matches the current worktree.
 
@@ -74,7 +80,7 @@ For each authorized ready chunk:
 
 4. Delegate implementation.
    - Spawn a fresh implementer sub-agent when possible.
-   - Give the sub-agent the saved prompt and explicitly tell it to use `$implementer`.
+   - Give the sub-agent the saved prompt and exact `$implementer` skill path from the assignment's selected bundle; preserve bundle identity for all descendants, not the installed name alone.
    - Use a supported task label mapped to the assignment ID under **Run State and Worker Lifecycle**.
    - Pass only the context needed for that chunk.
    - Tell the sub-agent not to commit and to report changed files, validation, blockers, and proposed commit message.
@@ -98,6 +104,7 @@ For each authorized ready chunk:
    - Invoke `$validator` for feature acceptance, regression, contract, UI/browser, runtime, API, device, or integration evidence when a separate validation pass would reduce risk.
    - Give the validator the exact target, applicable frozen requirements, findings and evidence limits; avoid unrelated planning/history context.
    - Treat validator results as evidence for the orchestrator's acceptance decision, not as acceptance by themselves.
+   - Route fixable in-scope failures back through correction and revalidation in this assignment. Keep acceptance held; release validation writes/holds before repairs and preserve the original failed evidence. A failed test alone is not a blocked return requiring worker retirement.
 
 8. Accept the chunk.
    - Confirm required validation passed under the current recorded acceptance contract; handle explicit user-approved exceptions under **Commit Rules**, never as fabricated PASS evidence.
@@ -107,27 +114,26 @@ For each authorized ready chunk:
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
    - Retire the chunk's workers under **Run State and Worker Lifecycle**, recording any justified retention exception before further delegation.
 
-9. Continue.
-   - Update the existing live handoff and the chunk's current outcome; update checklist/map/readiness entries when their state/dependencies change, without copying the running journal into each artifact.
-   - Reconcile temporary-resource ownership/retention and perform eligible authorized cleanup under **Resource Lifecycle** before the next large allocation.
-   - Choose the next ready chunk.
-   - Stop when all chunks are complete, blocked, or no ready chunk remains.
+9. Hand off or finish the assigned group.
+   - Update the durable chunk acceptance/outcome record. In coordinated mode return proposed scheduling/readiness changes; only the coordinator writes run-wide records. Direct mode updates the existing bounded handoff.
+   - Reconcile resources/retention and cleanup under **Resource Lifecycle**. Transfer unresolved consumers and allocation responsibility before retirement; completion alone does not release resources.
+   - Continue only to the next explicitly assigned group member when prerequisites and authority permit. Preserve each unit's acceptance/rollback boundary. Otherwise return the shared contract's result and stop; do not self-dispatch the next checklist chunk.
 
 ## Run State and Worker Lifecycle
 
-Use the existing durable handoff as one compact continuation record, not a second status system. Update it in place with current chunk/assignment IDs, candidate/baseline identity, worker ownership, unresolved findings/blockers, evidence pointers, retained resources, next ready work and one-line accepted outcomes/commit IDs. Preserve outstanding gates, dependencies, recovery/retention obligations and authority restrictions directly or through clear authoritative links, including obligations needed only later. Do not carry accepted-chunk narratives, full logs or superseded findings into later assignments unless a dependency or regression requires them.
+Keep the existing chunk record sufficient for recovery: candidate/baseline, worker ownership, findings, evidence, authority and retained consumers. Return these to the coordinator's one live run handoff; do not create a competing global status record. Direct mode uses the existing bounded handoff. Preserve future gates, dependencies and recovery obligations through authoritative links. Do not load accepted-chunk narratives or full logs unless applicable to current work.
 
 Attribute every worker assignment to a stable chunk and role with a canonical ID such as `<chunk-id>:<role>:<attempt>`. Use implementer modes `new-chunk | correction | replacement` and validator modes `validation | revalidation | replacement`. Same-worker corrections/revalidation retain the assignment ID; a fresh replacement increments the attempt. A next-chunk worker uses the new chunk's ID. Where task labels are supported, use the canonical ID only if valid for that tool; otherwise choose a supported unique label (for example, `o_03_implementer_1` for `O-03:implementer:1`). Record the assignment-to-label/worker mapping once in the handoff; check label collisions and do not assume telemetry can decode an unsupported format.
 
 The implementer may remain available as the same-chunk repair agent during validation, but must not write until the parent releases the validation hold and assigns a correction. Before a replacement edits, establish that the prior worker and its owned operations have stopped writing; verify the actual candidate, transfer relevant findings/resources, retire the superseded assignment and designate the replacement as sole writer. A recorded transfer alone does not establish that writes stopped. An unresolved validation hold still prevents replacement edits.
 
-At acceptance or permanent block, transfer required responsibilities and retire the workers: stop further assigned work, remove them from dispatch and close them when supported. If closure is unavailable, use supported controls to establish inactivity and record retirement; do not claim interruption closed a worker or released its processes/resources. Preserve held source and evidence. Any retention exception needs a purpose and release condition. Safe independent chunks may overlap with recorded ownership and candidate isolation; do not serialize them merely because another worker remains available. Retained workers receive no unrelated next-chunk work. Idle availability alone is not evidence of token consumption.
+At acceptance, a blocked return or assignment end, transfer required responsibilities and retire descendants: stop further assigned work, remove them from dispatch and close when supported. If closure is unavailable, establish inactivity and record retained slots/processes; do not claim interruption closed a worker or released resources. Preserve held source/evidence and record any retention exception with purpose/release condition. Return descendant identities so coordinator retirement covers the full subtree. Default to one unit at a time in the assigned group; wider concurrency needs explicit qualified authority. Retained workers receive no unrelated next-chunk work. Idle availability alone is not evidence of token consumption.
 
 ## Readiness Audit Rules
 
 The readiness audit exists to resolve blockers before implementation, not during the first failed prompt.
 
-Record each chunk's ID and readiness classification. For non-ready chunks, record the applicable details below; reuse a shared blocker entry for affected chunks rather than duplicating its analysis. Dependency-only holds need the missing predecessor and acceptance link, not an options essay.
+Record assigned chunks' readiness and notify the coordinator of affected outside dependencies. For non-ready chunks, record the applicable details below; reuse a shared blocker entry rather than duplicating its analysis. Dependency-only holds need the missing predecessor and acceptance link, not an options essay.
 
 - chunk ID/name
 - readiness classification: `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`
@@ -142,7 +148,7 @@ Before implementation starts, require one of:
 - contract blockers are resolved and the intended chunk's required engineering freezes are recorded in authoritative artifacts
 - or the user explicitly authorizes a ready-subset run while unrelated contract-blocked chunks remain held
 
-Complete later mechanism freezes before their first dependent chunk; independent ready work need not await every later implementation detail. Investigate major feasibility/irreversible risks early. Do not spawn implementers for blocked chunks or let them decide missing parent-route, API, persistence, timebase, ownership or cleanup contracts.
+Complete required mechanism freezes before dependent implementation. Report wider feasibility/contract risk to the coordinator; do not redesign unassigned phases. Do not spawn implementers for blocked chunks or let them decide missing parent-route, API, persistence, timebase, ownership or cleanup contracts.
 
 Bound further investigation by a question and an observation that distinguishes mechanisms. When equivalent experiments cannot resolve missing contract, access or authority, record one focused decision/blocker and continue only independently authorized ready work.
 
@@ -211,7 +217,7 @@ When spawning an implementer sub-agent:
 
 - start with a fresh sub-agent for each new chunk by default
 - reuse the same sub-agent only for follow-up fixes to the same chunk when continuity is useful
-- instruct it to use `$implementer`
+- instruct it to read `$implementer` at the verified path in the selected bundle, carrying that bundle identity explicitly
 - instruct it to edit files directly if the runtime supports sub-agent code edits
 - instruct it not to commit
 - keep the task narrow and self-contained
@@ -224,7 +230,7 @@ If sub-agent edits are not inspectable as the actual candidate diff, hold that c
 
 When invoking a validator pass:
 
-- instruct it to use `$validator`
+- instruct it to read `$validator` at the verified path in the same selected bundle; do not resolve a different installed version by bare name
 - give it the same chunk ID and a validator assignment ID/mode with the supported task-label mapping under **Run State and Worker Lifecycle**
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
@@ -259,6 +265,8 @@ Report concise differences, counts, failures, skipped/not-tested obligations, ev
 
 Unfinished source, backing Git metadata and required evidence must be durable from creation. Before delegating edits, verify the resolved checkout, backing Git/common-directory storage and evidence destinations under the reference's persistence procedure; an existing checkout is not automatically suitable. Reuse that verification only while paths/storage remain demonstrably unchanged. `/tmp` and other disposable locations may hold only reproducible copies. Keep a compact ownership/consumer/release record, preserve evidence and uncommitted work until their retention conditions are satisfied, and never infer cleanup authority from names, age or location.
 
+In coordinated mode, subdivide the coordinator's allocation among workers and coordinate increases/shared-target use before starting them. Report actual paths/consumers/remaining allocations; the coordinator owns the run-wide total and later retention. In direct mode, perform that run-owner duty within the assignment. Neither mode permits concurrent candidate/index mutations by coordinator and orchestrator.
+
 Read and apply [Resource Lifecycle](./references/resource-lifecycle.md) for that initial persistence verification and before creating/reusing worktrees or disposable build/test copies, large builds (including in the main checkout), dependency/browser installations, archives or other substantial allocations, and cleanup/storage recovery. It defines persistence, coordinated disk-headroom checks, evidence retention and bounded cleanup. Reuse already-read instructions and verified setup where applicable rather than reloading the reference for every routine step.
 
 The core safety boundary always applies: no broad `/tmp` clearing, wildcard/prefix deletion, shared-cache pruning, symlink traversal into unrelated locations, forced removal of uncommitted work, or destructive cleanup outside the recorded run-owned scope. Disk-full/quota/inode failures stop affected writes until safe headroom and candidate integrity are re-established.
@@ -292,6 +300,8 @@ If there are no findings, state an acceptable verdict clearly before summaries.
 
 ## Commit Rules
 
+In coordinated mode you are the sole committer for the assigned accepted scope; the coordinator routes approvals and holds competing Git writers. Persist the acceptance basis/candidate/evidence before committing, then record the resulting commit immediately. On uncertain interruption inspect actual Git and evidence before retrying; a commit alone proves neither acceptance nor integration. Return the real integration state; merging into another target requires authority and renewed applicability if inputs change. Direct mode uses the same checks without a coordinator.
+
 Implementation-chunk commits are controlled by the explicit commit policy. Planning checkpoints require their own applicable authorization under the preflight rule; neither permission grants the other. A broader user instruction forbidding commits or requiring confirmation for every commit still applies to both scopes unless explicitly changed. Supported implementation policies are:
 
 - `authorized-for-accepted-chunks`
@@ -314,7 +324,7 @@ For `ask-before-each-commit`:
 
 - stop after each accepted chunk
 - report the proposed one-line commit message
-- ask the user before committing
+- request user approval through the coordinator when delegated, or directly otherwise; after approval reverify candidate/staged identity before committing
 
 For `do-not-commit`:
 
@@ -355,18 +365,12 @@ Hold the affected chunk and its dependents, leaving them unaccepted, when:
 - required validation fails or cannot run at that chunk's assigned gate
 - sub-agent changes are not inspectable as an actual diff
 
-Record the blocker and preserve held work/evidence. Continue independent ready work only under existing authorization and after verifying it neither depends on the held implementation nor changes the validated scope, build/test inputs or shared runtime state. Separate its acceptance and commit from held work. Different filenames alone do not establish independence; when safe separation is unproven, hold that candidate too.
+Holding acceptance is distinct from ending the assignment. Fixable findings with a clear contract stay in the correction/revalidation loop; return `blocked` when a missing contract, authority, dependency or environment prevents safe progress, or `incomplete` at a directed stopping boundary. Do not keep retrying equivalent checks that cannot resolve the blocker.
 
-Stop the entire run and report when the user pauses/stops it, required run authority remains unresolved, a global safety/integrity issue prevents safe work, or no safe authorized ready chunk remains (including completion). Unresolved contract decisions still require explicit ready-subset authorization to continue unaffected work. A chunk-specific environment/validation hold alone does not cancel an otherwise authorized run; it never waives the blocked requirement.
+Record the blocker and preserve held work/evidence. Continue only independently ready members of the explicit assignment under existing authority, after verifying they do not depend on held work or change validated inputs/shared state. Otherwise return the block and ownership to the coordinator; it may schedule another eligible chunk. Different filenames alone do not establish independence. Separate acceptance/commits from held work; when safe separation is unproven, hold the candidate too.
+
+Stop dispatch and propagate pauses/safety restrictions to descendants immediately when the user or authorized coordinator pauses/stops, authority is unresolved, or a global integrity issue prevents safe work. Preserve in-flight operation identity and report; interruption is not cancellation of transmitted hardware commands. Stop at the assignment boundary or when no safe assigned work remains. A chunk hold does not cancel the coordinator's run or waive a gate. Unresolved contract decisions still require explicit ready-subset authority for unaffected work.
 
 ## Final Response
 
-For each orchestration run, report:
-
-- chunks completed
-- chunks blocked and why
-- readiness audit status
-- commits made, if any
-- validations run
-- residual risk
-- next recommended action
+Return the [Execution Contract](../coordinator/references/execution-contract.md#result-and-durable-handoff) fields: scoped outcome and acceptance level, candidate/build and actual Git disposition, accessible acceptance/validation evidence, missing obligations and residual risk, descendant/resource ownership and proposed scheduling updates. Direct mode reports the same facts to the user. Do not claim the entire plan is complete or start its next chunk merely because the assigned unit passed.

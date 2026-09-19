@@ -13,7 +13,9 @@ Verify behavior against the frozen plan, checklist, implementer prompt, review f
 
 Default to no code edits. Do not modify production code. Only create validation artifacts, notes, screenshots, logs, or temporary test data when the task requires it and the target environment is appropriate.
 
-The validator reports evidence and risk. The planner/reviewer or orchestrator decides whether the chunk is accepted.
+The validator reports evidence and risk. The designated planner/reviewer or bounded orchestrator decides chunk acceptance; the coordinator verifies completion and schedules the run rather than repeating that review.
+
+In coordinated execution, report to the assigned orchestrator and preserve run-level authority restrictions. Verify requirements/candidate independently; do not adopt an implementer's verdict or inherit its reasoning as validation. Do not write global scheduling records, commit, self-dispatch another chunk or release holds on behalf of an absent parent. Honor urgent user/authorized pauses immediately and hand off candidate/process/resource state to the surviving authorized owner if orchestration is interrupted.
 
 ## Required Inputs
 
