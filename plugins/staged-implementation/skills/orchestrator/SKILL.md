@@ -20,6 +20,7 @@ Prefer a task packet containing:
 - repo root
 - project instruction docs, if not discoverable from the repo
 - feature/fix name or slug
+- stable chunk IDs and a run-state/handoff path, or permission to create one beside the plan/checklist
 - plan path
 - implementation checklist path
 - prompt map path
@@ -50,7 +51,7 @@ Before delegating implementation, run a readiness preflight:
 1. Establish current state.
    - Read project instructions first.
    - Establish context from the plan, checklist, prompt map, current handoff/review and relevant git/worktree state. On continuation, read changed instructions/contracts and affected scope rather than reloading unchanged history.
-   - Before delegating edits, establish persistent implementation and evidence locations under **Persistent Workspaces**. On resume, verify the actual candidate files and backing Git metadata before using previous reports or continuing dependent work.
+   - Before delegating edits, establish persistent implementation and evidence locations under **Resource Lifecycle**. On resume, verify the actual candidate files and backing Git metadata before using previous reports or continuing dependent work.
    - Before initial implementation delegation, verify the reviewed planning package against its checkpoint and actual working files. If relevant planning changes remain uncommitted, honor an explicit uncommitted disposition or applicable planning-checkpoint authorization; otherwise finish applicable document checks, identify the exact files and proposed commit, and ask before proceeding. Planning-checkpoint permission and accepted-chunk commit permission are separate. Exclude unrelated changes; do not repeat a resolved checkpoint request or turn routine execution-status updates into a new planning checkpoint gate. Record the verified baseline, including relevant uncommitted inputs when explicitly allowed.
    - Read any existing readiness audit. If no readiness audit exists, create one before writing the first implementer prompt.
    - Initially classify every chunk as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`. Subsequently verify affected entries/dependencies; broaden when a shared contract changes or applicability is uncertain.
@@ -67,12 +68,14 @@ For each authorized ready chunk:
 
 3. Write the implementer prompt.
    - Produce one surgical prompt for that chunk only.
+   - Give the pass a stable `Chunk ID`, `Assignment ID` and mode under **Run State and Worker Lifecycle**.
    - Save official prompts beside the companion plan/checklist unless the user requests another output path.
    - Re-read the saved prompt before delegating.
 
 4. Delegate implementation.
    - Spawn a fresh implementer sub-agent when possible.
    - Give the sub-agent the saved prompt and explicitly tell it to use `$implementer`.
+   - Use a supported task label mapped to the assignment ID under **Run State and Worker Lifecycle**.
    - Pass only the context needed for that chunk.
    - Tell the sub-agent not to commit and to report changed files, validation, blockers, and proposed commit message.
 
@@ -86,7 +89,7 @@ For each authorized ready chunk:
 6. Handle review outcome.
    - If contract ambiguity exists, hold the affected chunk and identify the exact missing decision; apply **Stopping Conditions** before continuing other work.
    - If implementation violates the prompt or frozen contracts and the docs are clear, write a surgical follow-up prompt.
-   - Send the follow-up to the same implementer sub-agent when continuity helps; spawn a new implementer if a fresh pass is safer.
+   - Reuse the designated repair agent when continuity helps; if a fresh pass is safer, follow the replacement ownership-transfer procedure under **Run State and Worker Lifecycle** before permitting edits.
    - Repeat review/follow-up until accepted, blocked, or stopped by the user.
 
 7. Validate when evidence is required.
@@ -102,12 +105,23 @@ For each authorized ready chunk:
    - Confirm no out-of-scope work remains.
    - Apply the explicit commit policy.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
+   - Retire the chunk's workers under **Run State and Worker Lifecycle**, recording any justified retention exception before further delegation.
 
 9. Continue.
-   - Update one live handoff and the chunk's current outcome; update checklist/map/readiness entries when their state/dependencies change, without copying the running journal into each artifact.
-   - Reconcile temporary-resource ownership/retention and perform eligible authorized cleanup under **Temporary Resources and Cleanup** before the next large allocation.
+   - Update the existing live handoff and the chunk's current outcome; update checklist/map/readiness entries when their state/dependencies change, without copying the running journal into each artifact.
+   - Reconcile temporary-resource ownership/retention and perform eligible authorized cleanup under **Resource Lifecycle** before the next large allocation.
    - Choose the next ready chunk.
    - Stop when all chunks are complete, blocked, or no ready chunk remains.
+
+## Run State and Worker Lifecycle
+
+Use the existing durable handoff as one compact continuation record, not a second status system. Update it in place with current chunk/assignment IDs, candidate/baseline identity, worker ownership, unresolved findings/blockers, evidence pointers, retained resources, next ready work and one-line accepted outcomes/commit IDs. Preserve outstanding gates, dependencies, recovery/retention obligations and authority restrictions directly or through clear authoritative links, including obligations needed only later. Do not carry accepted-chunk narratives, full logs or superseded findings into later assignments unless a dependency or regression requires them.
+
+Attribute every worker assignment to a stable chunk and role with a canonical ID such as `<chunk-id>:<role>:<attempt>`. Use implementer modes `new-chunk | correction | replacement` and validator modes `validation | revalidation | replacement`. Same-worker corrections/revalidation retain the assignment ID; a fresh replacement increments the attempt. A next-chunk worker uses the new chunk's ID. Where task labels are supported, use the canonical ID only if valid for that tool; otherwise choose a supported unique label (for example, `o_03_implementer_1` for `O-03:implementer:1`). Record the assignment-to-label/worker mapping once in the handoff; check label collisions and do not assume telemetry can decode an unsupported format.
+
+The implementer may remain available as the same-chunk repair agent during validation, but must not write until the parent releases the validation hold and assigns a correction. Before a replacement edits, establish that the prior worker and its owned operations have stopped writing; verify the actual candidate, transfer relevant findings/resources, retire the superseded assignment and designate the replacement as sole writer. A recorded transfer alone does not establish that writes stopped. An unresolved validation hold still prevents replacement edits.
+
+At acceptance or permanent block, transfer required responsibilities and retire the workers: stop further assigned work, remove them from dispatch and close them when supported. If closure is unavailable, use supported controls to establish inactivity and record retirement; do not claim interruption closed a worker or released its processes/resources. Preserve held source and evidence. Any retention exception needs a purpose and release condition. Safe independent chunks may overlap with recorded ownership and candidate isolation; do not serialize them merely because another worker remains available. Retained workers receive no unrelated next-chunk work. Idle availability alone is not evidence of token consumption.
 
 ## Readiness Audit Rules
 
@@ -138,6 +152,9 @@ Every implementer prompt must include:
 
 ```text
 Repo root:
+Chunk ID:
+Assignment ID:
+Assignment mode: new-chunk | correction | replacement
 Read these first:
 Task:
 Scope for this pass:
@@ -188,6 +205,8 @@ For new implementer and independent-validator assignments, default to fresh scop
 
 Dispatch complete bounded assignments so workers can finish already-authorized routine steps without acknowledgement chatter. Coordinate candidate release, shared-resource acquisition, scope changes and required approvals explicitly; a completion notification does not release a workspace. Prefer completion notifications or interruptible waits, with proportionate polling when necessary. Preserve required user updates and immediate blocker/material-finding reports; do not add a permanent monitoring loop or wait so long that intervention is prevented.
 
+Do not routinely send status-only prompts to a worker with a complete assignment. A wait timeout alone does not justify an acknowledgement or context replay; use notifications, independent safe work or an interruptible wait compatible with required user updates. Perform a proportionate liveness check when expected progress, a tool failure or other evidence suggests the worker is stuck; prefer available status information before prompting. Necessary intervention and blocker reporting remain required.
+
 When spawning an implementer sub-agent:
 
 - start with a fresh sub-agent for each new chunk by default
@@ -200,13 +219,13 @@ When spawning an implementer sub-agent:
 - pass cleanup scope, retention requirements and disk/allocation restrictions; require workers to report exact owned resource paths and outstanding consumers on handoff
 - avoid delegating planner/reviewer decisions
 - wait only when the result is needed for the next critical-path step
-- close sub-agents when their chunk is accepted or permanently blocked
 
 If sub-agent edits are not inspectable as the actual candidate diff, hold that chunk and report the integration limitation instead of reviewing a summary as if it were a diff. Apply **Stopping Conditions** before continuing other work.
 
 When invoking a validator pass:
 
 - instruct it to use `$validator`
+- give it the same chunk ID and a validator assignment ID/mode with the supported task-label mapping under **Run State and Worker Lifecycle**
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
@@ -224,6 +243,8 @@ Efficiency changes organization and communication, not what must be understood, 
 
 Keep roles distinct: implementer self-audit; parent actual-diff/integration/contract review; validator independent checks of assigned behavior/risks. Do not automatically add a general reviewer for each correction. Reuse a validator for bounded corrections while context remains valid; a changed mechanism, disputed finding, new risk or explicit gate may require a fresh challenge. All mandated independent reviews remain required.
 
+For parent review, start with the actual scoped diff, frozen requirements and relevant evidence. Inspect surrounding code, callers and shared behavior as needed to assess impact; do not wait for a discovered defect to justify broader reading. Avoid repeatedly rereading unchanged full files or rerunning successful worker checks merely to restate evidence. Run parent-owned checks when required for acceptance, when worker evidence is missing/stale/uncertain, or when an independent check directly reduces a concrete risk.
+
 Reuse reliable verification helpers and a canonical candidate-scoped input record where useful; verify their coverage/applicability rather than rebuilding them per worker. Keep prior candidate provenance intact when inputs change, and keep concurrent candidates separate. Create only the smallest missing helper when justified, not a mandatory evidence framework. Before expensive checks, preflight relevant paths, tool versions, generated prerequisites and file-type/symlink handling. Recheck changed or uncertain setup; preflight does not replace behavioral assertions. Validators independently verify inputs and expected outcomes against the frozen contract, not an unexamined helper or previous verdict.
 
 For same-contract corrections, reference the original assignment and current candidate, then send the concrete finding, affected scope, required revalidation and proposed evidence reuse. Do not regenerate valid assignments, matrices, environment audits or evidence packages. A replacement worker needs enough baseline context to interpret the delta. Group coherent findings from the current review when practical, but report urgent safety/contract blockers immediately. Reuse only after verifying relevant source, harness, dependencies, build configuration and environment match, preserving original limits. A commit ID alone is insufficient. Rerun if applicability is uncertain; shared owners/styles may affect many consumers. Required fresh checks cannot be skipped.
@@ -234,35 +255,13 @@ Batch compatible independent reads/mechanical checks and inspect every result to
 
 Report concise differences, counts, failures, skipped/not-tested obligations, evidence limits and artifact paths; retain raw logs/artifacts and inspect unexpected output. Link any existing canonical input record and detailed results instead of regenerating/reproducing unchanged inventories, hashes or packages. Apply process improvements prospectively; do not reorganize historical evidence merely to match a new convention. Briefly record causes of recurring setup failures or reasons for repeated checks in the existing report, not a new tracking system. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
 
-## Persistent Workspaces
+## Resource Lifecycle
 
-Unfinished source must live on persistent storage from the first edit. Verify resolved workspace paths and backing Git/common-directory storage are not temporary, memory-backed or subject to automatic cleanup; a persistent-looking name or `.git` file alone is insufficient. The current checkout may itself be a worktree. Use it for safe sequential work; use isolated worktrees when delegation/concurrency or candidate isolation requires them. Prefer the project's established persistent worktree location. If none is suitable or already authorized, propose one dedicated location and ask once before creation; do not automatically scatter siblings or use `/tmp` as a fallback. Reuse the chosen location and same-chunk workspace; create only needed worktrees.
+Unfinished source, backing Git metadata and required evidence must be durable from creation. Before delegating edits, verify the resolved checkout, backing Git/common-directory storage and evidence destinations under the reference's persistence procedure; an existing checkout is not automatically suitable. Reuse that verification only while paths/storage remain demonstrably unchanged. `/tmp` and other disposable locations may hold only reproducible copies. Keep a compact ownership/consumer/release record, preserve evidence and uncommitted work until their retention conditions are satisfied, and never infer cleanup authority from names, age or location.
 
-Nested worktrees are allowed only when their paths are ignored and untracked in the containing repository. Verify both before creation; do not force-add them. Ignore rules prevent ordinary staging, not deletion: protect worktree containers and shared Git metadata from broad cleanup, including `git clean -fdx`, and never remove a containing checkout while nested worktrees or dependent Git metadata remain needed. Record workspace/common-directory paths, owners and consumers in the existing durable handoff. Preserve unfinished/held candidates; release integrated worktrees only after the existing retention and cleanup checks pass.
+Read and apply [Resource Lifecycle](./references/resource-lifecycle.md) for that initial persistence verification and before creating/reusing worktrees or disposable build/test copies, large builds (including in the main checkout), dependency/browser installations, archives or other substantial allocations, and cleanup/storage recovery. It defines persistence, coordinated disk-headroom checks, evidence retention and bounded cleanup. Reuse already-read instructions and verified setup where applicable rather than reloading the reference for every routine step.
 
-Reserve `/tmp` and other disposable storage for reproducible resources. A disposable build/test copy requires a complete persistent source candidate, including staged, unstaged, new/untracked files and required local inputs, with provenance linking the copy to it. No unique implementation edits belong there. Write required evidence and recovery artifacts to persistent destinations as produced, rather than waiting for acceptance or pause. A reboot can happen between handoffs. Persistence does not require premature commits or acceptance. On resume, missing/changed source requires recovery and diff verification before continuation; transcripts/Git metadata are recovery aids, not proof of complete recovery. Reconstructed candidates require applicable revalidation before acceptance.
-
-## Temporary Resources and Cleanup
-
-Authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources once the checks below pass. State this default in the handoff and worker assignments; do not require separate cleanup approval within its bounds. Explicit retention/no-deletion instructions and higher-priority restrictions override the default. Reading this skill or doing standalone planning/implementation/validation does not authorize orchestration cleanup. Resources accumulated earlier in the same resumed run qualify only after ownership and release conditions are verified and recorded; unknown ownership or files predating the run do not qualify.
-
-Maintain a compact record in the existing handoff of exact run-created paths, purpose/owner, active or future consumers, and release condition. Register resources when created and transfer responsibility when a worker exits; a closed agent does not make its files disposable. On resume, reconcile that record against actual resources before reusing or removing them. Do not infer ownership from a filename prefix, age or location under `/tmp`.
-
-Use these disk defaults automatically unless explicit project/run instructions override them; record any override in the existing handoff. Per filesystem, below **5 GiB free** means report low headroom and serialize large allocations; **2 GiB or less free** means a critical disk-space blocker and pause write-heavy work. They are operating defaults, not proof that a particular build fits.
-
-Before large builds, dependency/browser installations, checkout copies or archives, the parent checks every receiving filesystem and coordinates active/planned allocations there. Admit a start only when measured free space minus their conservative remaining additional peak, including the proposed operation, stays above the critical reserve. Account for starts already authorized to other workers before authorizing another; different directories may share one filesystem. If combined peak is uncertain, serialize and reassess; if even the single operation's headroom cannot be established, hold it. Use existing handoff/assignment notes, not a quota service. Workers must coordinate additional large allocations outside their assigned scope with the parent. Prefer compatible existing environments without sharing mutable candidate inputs or violating isolation.
-
-Recheck before large allocations and after substantial allocations or cleanup, rather than after every command. Completion releases an allocation assignment, not its retained bytes: remeasure free space and account for remaining consumers before scheduling more work. No continuous monitoring system is required.
-
-At observed critical space, or any disk-full/quota/inode-exhaustion error regardless of free bytes, stop launching affected writes, safely halt affected owned write-heavy operations and immediately report the blocker. State the filesystem, available capacity/error, held operations, known run-owned resources and eligible cleanup or needed user intervention. Do not retry failed writes, launch a large emergency archive or treat partial outputs as valid evidence. Only already-authorized bounded cleanup may reclaim resources; do not invent deletion authority or override a user pause. Independent read-only work may continue only if safe and authorized; stop the run when storage pressure prevents reliable work globally. Resume affected writes only after rechecking safe headroom and allocation conditions; inspect potentially partial/corrupt outputs, restore candidate identity and rerun affected checks before acceptance.
-
-At validation release, acceptance, abandonment or pause/handoff, classify resources as still in use, retained evidence/recovery, or disposable. The parent owns disposition across workers and later gates. Preserve required raw evidence, unique failed/unfinished state, uncommitted source and rollback packages until their retention condition is resolved. A failed run need not keep every duplicate dependency tree forever, but do not discard anything needed to substantiate/reproduce findings or satisfy a pending gate.
-
-Before releasing an evidence-bearing workspace, preserve the required artifacts in the agreed durable location, verify they remain readable/identifiable, and update references. Keep original failure identity; do not leave the only evidence behind a deleted temporary path. Moving bytes to the same filesystem is not space reclamation, and copying entire disposable workspaces or committing bulky generated output is not the default preservation method.
-
-Use the run's bounded cleanup scope, carried into each assignment. Check each exact path is run-owned and within that scope, with no active process/validator, retained artifact or pending consumer depending on it. Release owned processes/handles before removal, respecting pauses and operational authority. Do not traverse symlinks/mounts into unrelated locations, clear `/tmp` broadly, delete by wildcard/prefix, or prune shared caches, files predating the run, user files or resources belonging to other runs. Worker resources may be cleaned by the parent after a recorded ownership handoff, subject to the same authorization and release checks; resources still owned by another worker remain protected. Use the owning tool's safe lifecycle for managed resources such as Git worktrees, without forced removal of uncommitted work. If ownership, retention or authority is unclear, keep the resource and ask with concrete paths/reasons.
-
-Perform eligible cleanup at the lifecycle boundaries above, including run completion, rather than waiting for disk pressure. After accepted integration, explicitly resolve redundant candidate/build copies: verify persistent source/evidence preservation, rollback needs and consumer release, then remove eligible copies or record a specific retention reason and release condition. An evidence archive alone does not establish disposability; uncommitted work remains protected. Record removed paths, retained paths with reasons/revisit conditions, and resulting headroom after substantial cleanup. If cleanup is blocked or a pause does not permit it, preserve the inventory for handoff; do not silently forget resources or relax acceptance to recover space. Cleanup beyond the run-owned scope requires separate authority.
+The core safety boundary always applies: no broad `/tmp` clearing, wildcard/prefix deletion, shared-cache pruning, symlink traversal into unrelated locations, forced removal of uncommitted work, or destructive cleanup outside the recorded run-owned scope. Disk-full/quota/inode failures stop affected writes until safe headroom and candidate integrity are re-established.
 
 ## Review Rules
 

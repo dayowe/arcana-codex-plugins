@@ -105,6 +105,20 @@ The usual flow is:
 3. Use `validator` when runtime, UI, API, integration, or regression evidence is needed.
 4. Use `orchestrator` when you want Codex to coordinate the loop across chunks.
 
+## Lifecycle and Context Efficiency
+
+The workflow keeps implementation and validation rigor while avoiding avoidable context churn:
+
+- Each worker carries stable chunk/assignment IDs, with a recorded mapping to a supported unique task label when available. Same-worker corrections retain the ID; replacement workers increment the attempt.
+- An implementer may remain available for same-chunk repairs but cannot write during validation. Replacements acquire write ownership only after prior writes stop and the candidate, findings and resources are verified and transferred.
+- Accepted/permanently blocked assignments retire after handoff: stop work and dispatch, close when supported, otherwise establish inactivity. Retained exceptions need a purpose/release condition; safe independent chunks may overlap with explicit ownership and isolation. Idle availability alone does not demonstrate token expense.
+- Workers return one compact packet and stop until a concrete follow-up. Avoid acknowledgement chatter; retain justified liveness checks, intervention and blocker reporting.
+- The existing durable handoff stays compact while preserving pending gates, dependencies, recovery obligations and authority restrictions directly or through authoritative links.
+- Parent review starts from the actual diff, requirements and evidence, inspecting surrounding code, callers and shared behavior as needed without waiting for a discovered defect.
+- Read the resource reference for initial persistence verification before edits and before substantial allocations (including large builds in the main checkout), worktree/resource management or cleanup. Reuse applicable instructions and verified setup rather than reloading them for routine steps.
+
+These are efficiency rules, not acceptance shortcuts. Required independent validation, fresh gates, contract checks and evidence remain mandatory where the task requires them.
+
 ## Notes
 
 - The skills are intentionally separate. Keeping the roles separate makes the boundaries clearer and reduces accidental scope widening.

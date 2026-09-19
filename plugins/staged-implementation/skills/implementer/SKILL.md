@@ -20,7 +20,7 @@ Expect either:
 - a saved implementer prompt path, plus repo root when not obvious
 - or a complete in-chat implementer prompt
 
-The prompt should define scope, non-goals, requirements, invariants, validation, and test posture. If any required contract, symbol, endpoint, data source, output path, or validation target is unclear, stop and ask. Do not guess.
+The prompt should define scope, non-goals, requirements, invariants, validation, and test posture. Under orchestration it should also carry a stable `Chunk ID`, `Assignment ID`, and assignment mode (`new-chunk`, `correction`, or `replacement`) so the parent can distinguish same-chunk repair from next-chunk work. If any required contract, symbol, endpoint, data source, output path, or validation target is unclear, stop and ask. Do not guess.
 
 ## Workflow
 
@@ -71,6 +71,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - Confirm unaffected behavior was preserved when the prompt requires it.
 
 7. Report results.
+   - Echo the supplied chunk/assignment IDs and assignment mode when present.
    - Summarize changed files and behavior.
    - Distinguish fresh validation from verified reused evidence; give concise differences, counts, failures, skipped cases/limits and artifact paths instead of repeating unchanged inventories or full logs. Retain raw evidence and prior candidate provenance; inspect failures/unexpected output. Briefly explain recurring setup failures or repeated checks in this report. Apply process improvements prospectively without repackaging historical evidence.
    - Hand off owned temporary paths, active processes, retained evidence/recovery needs and disposable candidates to the parent. Do not remove a build/check-out needed by validation or a later gate merely because implementation ended.
@@ -81,6 +82,8 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 ## Implementation Rules
 
 Complete routine steps within the assignment without repeated parent acknowledgements. Promptly report blockers, material findings and ownership conflicts; candidate release, shared-resource acquisition, scope changes and required approvals remain coordination points. Completion does not release resources. For a bounded correction, verify the original assignment/current candidate and apply the delta with required revalidation instead of recreating still-valid artifacts. Preserve required user updates. Correctness obligations take priority over token savings.
+
+After returning a complete result, stop and wait for a concrete follow-up. Do not poll the parent/validator, pre-emptively inspect the next chunk, continue exploratory work, or generate additional summaries/evidence unless assigned. As the same-chunk repair agent, write only after the parent releases the validation hold and assigns the correction. For replacement, relinquish writes and hand off owned operations/resources; the replacement must wait for the parent's verified ownership transfer before editing. Retirement ends assigned work even if the runtime leaves the worker open; it does not release retained resources.
 
 An authorized orchestration run includes routine cleanup of its tracked, disposable temporary resources; the parent passes that bounded scope and any restrictions into the assignment. Clean only exact assigned run-owned resources after parent/consumer release, without a separate user approval within that scope. Verify ownership and path boundaries, preserve required evidence in a verified durable location with updated references, and release owned processes first. Never sweep `/tmp`, follow links into unrelated locations, prune shared caches, remove files predating the run or force-remove uncommitted work. Standalone implementation permission does not grant this orchestration scope. Without applicable authority or with uncertain retention, leave paths recorded and request clarification; retention/no-deletion instructions and pauses remain binding.
 
@@ -109,6 +112,7 @@ Do not silently broaden the test strategy in a way that changes project structur
 Keep the final response concise and factual:
 
 - ready for review | blocked | incomplete; candidate baseline plus scoped changes/build identity as applicable, not self-acceptance
+- chunk/assignment IDs and assignment mode when supplied
 - changed files and behavior
 - fresh/reused validation, failures and missing evidence
 - blockers, ambiguities, or residual risk

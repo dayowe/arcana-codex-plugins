@@ -20,6 +20,7 @@ The validator reports evidence and risk. The planner/reviewer or orchestrator de
 Prefer a task packet containing:
 
 - repo root
+- chunk ID, assignment ID, and assignment mode (`validation`, `revalidation`, or `replacement`) when invoked by an orchestrator
 - project instruction docs, if not discoverable from the repo
 - plan/checklist/prompt/review paths or in-chat contract
 - validation target, such as local app URL, API base URL, device, service, CLI, test suite, or build target
@@ -78,11 +79,13 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 4. Capture evidence.
    - Record commands or tools used.
    - Summarize differences, counts, failures, skipped/not-tested cases, limits and artifact paths; retain full logs and inspect unexpected output. Link applicable canonical input records rather than regenerating/reproducing unchanged inventories. Preserve prior candidate provenance and distinguish newly run checks from verified reused evidence. Briefly explain recurring setup failures or repeated checks in the existing report; apply improvements prospectively without repackaging historical evidence.
+   - Batch coherent non-urgent findings into one report/follow-up packet instead of streaming acknowledgement-scale updates. Report a safety, contract, candidate-integrity or resource blocker immediately when parent intervention is required.
    - Capture screenshots only when they support the verdict.
    - Note relevant console errors, network failures, logs, or API responses.
    - Do not print secrets, tokens, passwords, or sensitive env values.
 
 5. Report verdict.
+   - Echo supplied chunk/assignment IDs and assignment mode when present.
    - Establish candidate identity remains valid before reporting. Entry verification may cover this adjacent boundary when controlled ownership and applicable change checks demonstrate unchanged relevant source/inputs/build; do not automatically repeat full scans. Mutation, interruption that makes continuity uncertain or other identity uncertainty requires renewed verification. If relevant inputs changed, stop affected checks, notify the parent and qualify old evidence; resume only after a stable candidate is established. Prior-agent assurances alone do not establish continuity.
    - Mark each validation item as pass, fail, blocked, or not tested.
    - Explain failures with concrete observed behavior.
@@ -93,6 +96,8 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 For a correction/revalidation, verify the original assignment/current candidate and independently assess the delta; reuse only permitted evidence whose relevant source, harness, dependencies, build configuration and environment still match. Do not trust the implementer's PASS alone. Rerun affected checks, new failure cases and explicitly required fresh checks; rerun when applicability is uncertain. Preserve original failed evidence without recreating valid matrices, setup audits or report packages. Shared-owner changes may require broader coverage.
 
 Complete assigned routine checks without repeated parent acknowledgements; promptly report blockers/material findings and coordinate candidate release, shared resources, scope changes and approvals. A completion notice does not release a workspace. Preserve required user updates. Correctness and acceptance obligations take priority over token savings.
+
+After returning the verdict, stop and wait for a concrete revalidation assignment. Do not poll the parent/implementer, continue exploratory validation, or repeat successful checks merely because the worker remains available. Same-worker revalidation retains the chunk/assignment IDs; independently determine affected coverage plus required regressions/fresh gates, then stop after reporting. On replacement or retirement, hand off validation holds, owned operations/resources and evidence; the parent coordinates their release. Retirement ends assigned work even if the runtime leaves the worker open.
 
 ## Browser/UI Validation
 
@@ -155,6 +160,9 @@ Use this compact structure, omitting empty optional sections. Keep blocking find
 ```text
 Verdict:
 - pass | fail | blocked | partial
+
+Assignment:
+- chunk/assignment IDs and mode when supplied
 
 Candidate:
 - baseline/scoped changes and relevant build identity

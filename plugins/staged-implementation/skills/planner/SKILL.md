@@ -97,7 +97,7 @@ A good chunk:
 - has explicit non-goals
 - can be validated without finishing the whole feature
 - has validation commands that prove the unit, not just an internal helper edit
-- is large enough to justify a separate prompt/review cycle
+- justifies a separate prompt/review/validation cycle without combining unrelated risk or rollback boundaries
 
 Prefer merging adjacent checklist items when they:
 
@@ -114,7 +114,7 @@ Prefer splitting work when:
 - restart, migration, upgrade, rollback, or safety risk deserves isolated review
 - one part is still ambiguous while adjacent work is already frozen
 
-Do not create separate prompts just because a second file is touched, a helper is extracted, or a checklist has multiple bullets that share the same risk and validation surface.
+Do not create separate prompts just because a second file is touched, a helper is extracted, or a checklist has multiple bullets that share the same risk and validation surface. Avoid micro-chunks whose extra handoffs, fresh contexts and repeated review/validation cost more than the isolation benefit they provide.
 
 ## Planning and Evidence Proportionality
 
@@ -226,6 +226,9 @@ Use this prompt structure unless the user explicitly requests a different shape:
 
 ```text
 Repo root:
+Chunk ID:
+Assignment ID:
+Assignment mode: new-chunk | correction | replacement
 Read these first:
 Task:
 Scope for this pass:
@@ -282,6 +285,7 @@ Every orchestrator prompt must include:
 
 - repo root
 - feature/fix name or slug
+- stable chunk-ID convention and a run-state/handoff path, or permission for the orchestrator to create one beside the plan/checklist
 - plan path
 - implementation checklist path
 - prompt map path
@@ -293,6 +297,10 @@ Every orchestrator prompt must include:
 - cleanup scope: routine run-owned cleanup default, applicable restrictions, required retention and resource handoff
 - persistent implementation/evidence locations, or the location decision required before dependent work starts
 - stopping conditions
+
+State the intended lifecycle: a same-chunk repair agent may remain available but cannot write during validation. Replacements acquire write ownership only after prior writes stop and candidate/findings/resources are verified and transferred. Accepted/permanently blocked assignments retire after required handoffs, using closure when supported or verified inactivity and removal from dispatch otherwise. Preserve held work and permit safe independent overlap with recorded ownership/isolation; retained-worker exceptions need a purpose and release condition. Use the existing handoff to preserve outstanding gates, dependencies, recovery obligations and authority restrictions, not just the next step.
+
+Use canonical assignment IDs such as `<chunk-id>:<role>:<attempt>`; same-worker corrections/revalidation retain the ID and fresh replacements increment the attempt. If task labels are supported, use the ID only when valid for that tool; otherwise use a supported unique encoding and record its mapping to the assignment/worker in the handoff. Do not require unsupported label syntax or assume telemetry recognizes the encoding.
 
 State in the handoff that authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. No separate cleanup approval question is needed within those bounds. Carry this scope into worker assignments and honor explicit retention/no-deletion instructions and higher-priority restrictions. On resuming the same run, accumulated resources qualify only after their run ownership and release conditions are verified and recorded. Unknown ownership, shared caches, files predating the run, unrelated resources and anything still needed remain excluded. Standalone planning/implementation/validation or commit permission does not grant this orchestration cleanup scope; ask for concrete additional authority only when needed outside it. Never propose blanket clearing of `/tmp`.
 
