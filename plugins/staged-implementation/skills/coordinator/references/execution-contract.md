@@ -15,6 +15,18 @@ Shared by Coordinator and Orchestrator. Use existing prompt, handoff and chunk-e
 
 In coordinated mode, the orchestrator owns its chunk prompt, review, evidence and acceptance record; the coordinator owns global scheduling/readiness/status records. The orchestrator returns proposed global updates rather than editing them concurrently. If a shared contract must change, hold affected work and route it for authoritative reconciliation. Direct mode folds run duties into the orchestrator only for the explicitly bounded assignment.
 
+### Assignment labels
+
+Establish one non-secret run ID in the existing handoff before dispatch. Preserve it across session restarts/resume and pass it unchanged to descendants; distinct runs use distinct IDs. The logical assignment is run ID + scope (`chunk` or `group`) + exact chunk/gate or named-group ID + role + attempt. A group names its members explicitly; its workers use their actual assigned chunk or group, not an inferred allocation. Same-worker correction/revalidation retains identity; a fresh replacement increments the attempt for that run/scope/unit/role, including after resume. Do not reuse an assignment ID for a different worker.
+
+For supported spawn task names, encode this identity as:
+
+`si1_<hex run ID>_<c|g>_<hex unit ID>_<role>_<attempt>`
+
+Use lowercase hexadecimal of the exact UTF-8 run/unit IDs (no slugification), `c` for one chunk or gate, `g` for a named group, the lowercase role name, and a positive decimal attempt without leading zeros. IDs must be nonempty, at most 96 UTF-8 bytes each and contain no characters below U+0020; keep the encoded label within 512 characters and the tool's actual limits. For example, run `run-a`, chunk `O-03`, role `implementer`, attempt `1` becomes `si1_72756e2d61_c_4f2d3033_implementer_1`. Hex is reversible, not anonymization; never put credentials or private content in identifiers.
+
+Record logical assignment → submitted tool label → returned worker ID and immediate parent in the existing handoff/assignment record once. Check uniqueness in the tool's naming scope. If the tool cannot accept the encoding or has no label field, retain the logical identity and explicitly map the supported unique label (or absence of one) to the actual worker; never silently truncate, rename canonical IDs or assume an audit can infer the mapping. Labels identify assignments, not acceptance, completion or resource release. No extra status messages or telemetry journal are required.
+
 ## Execution and Acceptance
 
 The orchestrator reads the actual candidate and contracts, writes/reuses the scoped implementer prompt, reviews the actual diff and affected behavior, obtains independent validation where required, reconciles findings and decides chunk acceptance. No implementer self-acceptance or validator acceptance authority. Independence requires a separate validator assignment with authoritative requirements and candidate evidence, not adoption of the implementer's verdict. Required fresh challenges remain mandatory.

@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Experimental preview — `0.2.0-alpha.2`.** Stable `0.1.5` is preserved on `master`. This branch changes Orchestrator's boundary; old whole-checklist launch prompts must explicitly select Coordinator rather than silently losing scope. No installation, migration execution, measured savings or unattended-runtime qualification is implied by the files or structural validators. Qualify the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution. Do not mix stable and preview role instructions in one run.
+**Experimental preview — `0.2.0-alpha.3`.** Stable `0.1.5` is preserved on `master`. This branch changes Orchestrator's boundary; old whole-checklist launch prompts must explicitly select Coordinator rather than silently losing scope. No installation, migration execution, measured savings or unattended-runtime qualification is implied by the files or structural validators. Qualify the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution. Do not mix stable and preview role instructions in one run.
 
 ## Plugin Structure
 
@@ -140,7 +140,7 @@ The existing plan/checklist/prompt map and one live handoff remain authoritative
 
 The workflow keeps implementation and validation rigor while avoiding avoidable context churn:
 
-- Each worker carries stable chunk/assignment IDs, with a recorded mapping to a supported unique task label when available. Same-worker corrections retain the ID; replacement workers increment the attempt.
+- Each worker carries stable run/unit/assignment identity using the [shared label convention](skills/coordinator/references/execution-contract.md#assignment-labels), with a recorded mapping to the tool label, actual worker and immediate parent. Resume preserves the run ID; same-worker corrections retain assignment identity; replacement workers increment the attempt.
 - An implementer may remain available for same-chunk repairs but cannot write during validation. Replacements acquire write ownership only after prior writes stop and the candidate, findings and resources are verified and transferred.
 - Accepted/blocked/end-of-assignment workers retire after handoff: stop work and dispatch, close when supported, otherwise establish inactivity and report retained slots/processes. Default coordinated scheduling is one active assignment at a time; broader concurrency requires explicit qualified authority. Idle availability alone does not demonstrate token expense.
 - Workers return one compact packet and stop until a concrete follow-up. Avoid acknowledgement chatter; retain justified liveness checks, intervention and blocker reporting.
