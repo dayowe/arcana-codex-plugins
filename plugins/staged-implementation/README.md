@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Experimental preview — `0.2.0-alpha.1`.** Stable `0.1.5` is preserved on `master`. This branch changes Orchestrator's boundary; old whole-checklist launch prompts must explicitly select Coordinator rather than silently losing scope. No installation, migration execution, measured savings or unattended-runtime qualification is implied by the files or structural validators. Qualify the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution. Do not mix stable and preview role instructions in one run.
+**Experimental preview — `0.2.0-alpha.2`.** Stable `0.1.5` is preserved on `master`. This branch changes Orchestrator's boundary; old whole-checklist launch prompts must explicitly select Coordinator rather than silently losing scope. No installation, migration execution, measured savings or unattended-runtime qualification is implied by the files or structural validators. Qualify the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution. Do not mix stable and preview role instructions in one run.
 
 ## Plugin Structure
 
