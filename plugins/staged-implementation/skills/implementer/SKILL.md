@@ -76,7 +76,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - Echo the supplied chunk/assignment IDs and assignment mode when present.
    - Summarize changed files and behavior.
    - Distinguish fresh validation from verified reused evidence; give concise differences, counts, failures, skipped cases/limits and artifact paths instead of repeating unchanged inventories or full logs. Retain raw evidence and prior candidate provenance; inspect failures/unexpected output. Briefly explain recurring setup failures or repeated checks in this report. Apply process improvements prospectively without repackaging historical evidence.
-   - Hand off owned temporary paths, active processes, retained evidence/recovery needs and disposable candidates to the parent. Do not remove a build/check-out needed by validation or a later gate merely because implementation ended.
+   - Include the handoff of owned temporary paths, active processes, write state, retained evidence/recovery needs and disposable candidates in the final result; do not wait for a separate retirement-message exchange. Missing handoff information still requires a concrete follow-up. Do not remove a build/check-out needed by validation or a later gate merely because implementation ended.
    - List blockers, ambiguities, or residual risk.
    - Link the durable contract verification matrix for contract-heavy chunks unless explicitly required in the response; keep blocking findings and missing evidence visible and verify artifact accessibility.
    - Always propose a one-line commit message unless the user explicitly asks not to. If the prompt defines a chunk ID, start the message with that exact prefix.
