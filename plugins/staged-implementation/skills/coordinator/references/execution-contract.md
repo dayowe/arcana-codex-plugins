@@ -41,6 +41,20 @@ The active orchestrator alone stages/commits its accepted scope under its commit
 
 For `ask-before-each-commit`, return the concrete proposed commit and pause before Git mutation pending approval; for `do-not-commit`, preserve and identify accepted uncommitted work. Acceptance and Git completion are separate facts. User pauses and later authority restrictions override the assignment.
 
+## User-Requested Progress Snapshots
+
+Treat ordinary progress questions as lightweight snapshots by default, recognizing intent rather than exact wording. Examples such as "status?", "progress update" and "how's it going?" are illustrative, not commands the user must memorize.
+
+For each ordinary progress request, Coordinator requests one bounded snapshot from the active Orchestrator. Reuse an already-pending snapshot request for that assignment instead of sending another. If no Orchestrator assignment is active, report the latest known outcome. The Orchestrator answers from existing knowledge without cascading status requests to workers, inspecting changing files, reconstructing evidence or running checks solely for the snapshot. In direct mode, Orchestrator answers the user from its own known state. Do not spawn a worker or wake a retired assignment for a snapshot.
+
+Return a short paragraph covering the current chunk/phase, meaningful progress, known blockers and what remains before acceptance/commit. Distinguish reported progress from verified acceptance; qualify older information as "last reported" and missing blocker information as "no blocker reported". Do not invent percentages, ETAs or fresh verification. A snapshot neither performs nor replaces acceptance.
+
+During an active run or direct Orchestrator assignment, deliver user-facing snapshots as intermediate commentary, not a final response that ends the execution turn. A progress question does not replace the objective or request a pause. After replying, continue authorized coordination/work or supported waiting. When a bounded Orchestrator completes, Coordinator processes its result through normal completion verification and scheduling; that completion does not itself end the run. Existing stopping conditions still apply, and bounded Orchestrators still return and stop at their own assignment boundary.
+
+If a fresh reply is not promptly available, provide the last known state and its limitation without interrupting active work or repeatedly prompting. Use supported notifications/waits for the requested reply. Do not add acknowledgement exchanges, progress documents or periodic reporting solely because an update was requested; continue the authorized work or waiting afterward, preserving any user pause.
+
+An explicit request for deeper investigation, fresh verification or a detailed review overrides the lightweight default to the extent requested and within existing authority. It does not waive safety, ownership, pause handling or acceptance requirements. Material findings and urgent blockers still receive their required treatment.
+
 ## Result and Durable Handoff
 
 Return concise fields with accessible evidence links; omit empty optional sections:
