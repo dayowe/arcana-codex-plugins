@@ -4,7 +4,9 @@ Codex plugin marketplace for reusable agent workflows.
 
 ## Included Plugins
 
-- `staged-implementation`: Planner, implementer, validator, and orchestrator skills for staged implementation workflows.
+- `staged-implementation`: Planner, coordinator, bounded orchestrator, implementer and validator skills for staged implementation workflows.
+
+This branch contains the experimental coordinated-workflow preview (`0.2.0-alpha.5`). Stable `0.1.5` remains on `master`; the Git install commands below select that stable branch. Do not mistake branch-local edits for an installed upgrade. See the plugin README for the preview boundaries and qualification procedure.
 
 ## Install
 
@@ -34,6 +36,7 @@ plugins/
       plugin.json
     skills/
       planner/
+      coordinator/
       orchestrator/
       implementer/
       validator/

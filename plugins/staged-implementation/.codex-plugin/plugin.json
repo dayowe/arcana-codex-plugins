@@ -1,20 +1,21 @@
 {
   "name": "staged-implementation",
-  "version": "0.1.5",
-  "description": "Planner, implementer, validator, and orchestrator skills for staged implementation workflows.",
+  "version": "0.2.0-alpha.5",
+  "description": "Experimental coordinated staged implementation with planner, coordinator, bounded orchestrator, implementer, and validator roles.",
   "author": {
     "name": "Local developer"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "Staged Implementation",
-    "shortDescription": "Plan, implement, validate, and orchestrate staged code work.",
-    "longDescription": "Staged Implementation bundles planner, implementer, validator, and orchestrator skills for chunked implementation work with review and evidence-based validation.",
+    "displayName": "Staged Implementation (Coordinated Preview)",
+    "shortDescription": "Coordinate a run or execute a bounded implementation chunk.",
+    "longDescription": "Experimental two-entry workflow: a run coordinator dispatches fresh bounded orchestrators, each preserving actual-diff review, independent validation and authorized acceptance. Direct orchestration remains available for bounded work.",
     "developerName": "Local developer",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Run the next staged implementation chunk.",
+      "Use coordinator to execute the authorized staged plan.",
+      "Use orchestrator for the assigned bounded chunk.",
       "Write the next implementer prompt.",
       "Validate this chunk against the frozen contract."
     ]

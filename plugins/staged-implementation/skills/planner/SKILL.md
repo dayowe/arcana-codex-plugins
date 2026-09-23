@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, run a readiness or ambiguity audit, choose the next implementation chunk, write an implementer or orchestrator handoff prompt, review staged or supplied diffs against frozen docs, clarify contracts, control scope, or define the next handoff. Do not use for direct implementation unless the user explicitly asks the planner to implement.
+description: Staged implementation planner/reviewer workflow for any codebase. Use when Codex should prepare or update a plan/checklist/prompt map, audit readiness, choose a chunk, write an implementer or bounded-orchestrator handoff or a coordinator run handoff, review diffs against frozen docs, clarify contracts, or control scope. Do not implement unless explicitly asked.
 ---
 
 # Planner
@@ -38,7 +38,7 @@ For planner/reviewer tasks, prefer a task packet containing:
 - current ground truth, such as plan, checklist, prompt map, recent review notes, or git verification notes
 - requested action: write next implementer prompt, review staged diff, clarify docs, update prompt map, prepare checklist, or similar
 - output path, when saving an official artifact is requested or expected
-- commit policy, when writing an orchestrator handoff prompt
+- commit policy and execution boundary, when writing an orchestrator/coordinator handoff prompt
 
 If a path, contract, data source, diff target, or output location is required and cannot be discovered safely, stop and ask for the exact missing information. Do not guess.
 
@@ -275,17 +275,18 @@ Reuse explicit planning-checkpoint authorization already granted; otherwise ordi
 
 Respect explicit instructions to leave the planning package uncommitted. Record that disposition and the baseline commit plus relevant uncommitted planning files in the handoff so the orchestrator can verify the actual inputs. Do not repeatedly ask for a checkpoint already made, authorized or explicitly waived; unrelated dirty files do not by themselves require another commit.
 
-## Orchestrator Handoff Prompts
+## Execution Handoff Prompts
 
-When asked to write, produce, or prepare an orchestrator prompt, treat it as an official durable handoff artifact, not casual chat output.
+Choose the entry point explicitly: `$orchestrator` for one chunk/gate or a named coherent group; `$coordinator` for unattended run-wide scheduling with fresh bounded orchestrators. Preserve the requested work: an older whole-checklist orchestrator prompt needs an explicit entry-point/boundary update, not a silent one-chunk truncation or an accidental second scheduling loop. Do not change existing chunk IDs, contracts or gates merely to adopt the execution model.
 
-Save official orchestration handoff prompts at the user's specified path, or follow the established repository/workflow output location and naming convention. Otherwise, save beside the identified plan/checklist/prompt map with a descriptive filename. State the chosen path; do not ask solely because the user omitted a filename. Ask only if the companion location cannot be established or conflicting instructions leave the destination ambiguous. Do not overwrite an unrelated existing artifact. Honor an explicit chat-only request. Re-read the saved file before finishing.
+When asked for an execution handoff, treat it as an official durable artifact. Save at the requested path or established companion plan/checklist/prompt-map location, with a descriptive filename. State the path; ask only when the location or authority cannot be established, not solely because a filename was omitted. Do not overwrite unrelated artifacts. Honor explicit chat-only output and reread saved handoffs.
 
-Every orchestrator prompt must include:
+Read the shared [Execution Contract](../coordinator/references/execution-contract.md) when preparing either handoff. Every execution handoff must include:
 
 - repo root
 - feature/fix name or slug
-- stable chunk-ID convention and a run-state/handoff path, or permission for the orchestrator to create one beside the plan/checklist
+- direct/coordinated entry point, exact authorized boundary, stable run/chunk/assignment identities and current handoff path
+- selected skill-bundle version/source and exact role paths to propagate to all descendants, especially during branch-local preview trials
 - plan path
 - implementation checklist path
 - prompt map path
@@ -298,9 +299,13 @@ Every orchestrator prompt must include:
 - persistent implementation/evidence locations, or the location decision required before dependent work starts
 - stopping conditions
 
-State the intended lifecycle: a same-chunk repair agent may remain available but cannot write during validation. Replacements acquire write ownership only after prior writes stop and candidate/findings/resources are verified and transferred. Accepted/permanently blocked assignments retire after required handoffs, using closure when supported or verified inactivity and removal from dispatch otherwise. Preserve held work and permit safe independent overlap with recorded ownership/isolation; retained-worker exceptions need a purpose and release condition. Use the existing handoff to preserve outstanding gates, dependencies, recovery obligations and authority restrictions, not just the next step.
+For a coordinator launch, delegate global scheduling/status and shared-resource management to Coordinator; actual-diff review, independent validation, acceptance and scoped commits remain with the active bounded Orchestrator. Require runtime qualification for nested delegation, scoped context/model preservation and recycling worker capacity before consequential execution. Start with one active orchestrator assignment at a time. The coordinator verifies completion without routinely repeating the chunk review. Reuse the existing live handoff and chunk evidence locations; no second journal or automatic transcript forwarding.
 
-Use canonical assignment IDs such as `<chunk-id>:<role>:<attempt>`; same-worker corrections/revalidation retain the ID and fresh replacements increment the attempt. If task labels are supported, use the ID only when valid for that tool; otherwise use a supported unique encoding and record its mapping to the assignment/worker in the handoff. Do not require unsupported label syntax or assume telemetry recognizes the encoding.
+For a direct orchestrator launch, name the chunk/gate IDs and stop boundary. It handles needed run duties only for that scope, not the whole checklist. A validation-only gate need not spawn an implementer. Named groups retain each chunk's acceptance and rollback obligations. Both entry points preserve later integration/platform gates and distinguish accepted-uncommitted, committed and integrated results.
+
+State the [shared lifecycle](../coordinator/references/execution-contract.md#worker-retirement-and-capacity): retain same-chunk repair continuity without writes during validation; verify writer cessation and ownership transfer before replacement. Carry resource/hold handoff in final results and retire assignments without a subsequent ceremonial message exchange. Qualify supported closure or automatic reclamation through successive complete worker groups; absence of a close tool alone is not a blocker. Actual capacity failures permit bounded safe recovery, not an automatic session restart or waived gate. Route coordinated approvals through Coordinator, propagate user pauses promptly, and preserve recovery evidence. Keep future gates, dependencies, recovery obligations and authority restrictions accessible in the existing handoff.
+
+Use the [shared assignment-label contract](../coordinator/references/execution-contract.md#assignment-labels) for both execution entry points. Establish/recover one stable run ID, preserve it on resume and propagate it to descendants. Same-worker corrections/revalidation retain identity; fresh replacements increment the attempt. Require the shared encoding for supported task names and the logical-assignment/tool-label/actual-worker mapping with immediate parent in the existing handoff. Tool limitations require an explicit mapping, not silent truncation or assumed telemetry attribution.
 
 State in the handoff that authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. No separate cleanup approval question is needed within those bounds. Carry this scope into worker assignments and honor explicit retention/no-deletion instructions and higher-priority restrictions. On resuming the same run, accumulated resources qualify only after their run ownership and release conditions are verified and recorded. Unknown ownership, shared caches, files predating the run, unrelated resources and anything still needed remain excluded. Standalone planning/implementation/validation or commit permission does not grant this orchestration cleanup scope; ask for concrete additional authority only when needed outside it. Never propose blanket clearing of `/tmp`.
 
@@ -314,16 +319,16 @@ Resolve commit behavior from the user's current instructions, still-applicable e
 
 Ask before saving only when commit authority remains missing, conflicting or ambiguous after checking those sources. General permission to implement, an example of a possible workflow, or permission for one specific commit is not authorization to commit every accepted chunk. Do not silently select a policy merely to avoid asking.
 
-If the user says to orchestrate implementation and their stated workflow preference says the orchestrator should commit accepted chunks, use `authorized-for-accepted-chunks` and include this exact policy text:
+If the user authorizes execution and their stated workflow preference says the orchestrator should commit accepted chunks, use `authorized-for-accepted-chunks` and include this policy text:
 
 ```text
 Commit policy: authorized-for-accepted-chunks
-Commits are authorized for accepted chunks only. Commit after each accepted chunk once review and required validation pass. Do not commit unrelated dirty changes. Use one-line commit messages with the chunk ID prefix when one exists.
+The active bounded orchestrator may commit its accepted chunks after actual-diff review and required validation pass. No other role commits that candidate concurrently. Exclude unrelated dirty changes and use one-line messages with the chunk ID prefix. Coordinator scheduling-record commits require applicable documentation authority and a serialized Git handoff.
 ```
 
-For `ask-before-each-commit`, require the orchestrator to stop after each accepted chunk and ask before committing.
+For `ask-before-each-commit`, require the orchestrator to stop with a concrete reviewed commit proposal and obtain user approval, routed through Coordinator when delegated. Reverify the candidate before the approved commit.
 
-For `do-not-commit`, require the orchestrator to avoid commits and report the proposed one-line commit message for each accepted chunk.
+For `do-not-commit`, require preservation and identification of accepted uncommitted work, with proposed commit messages. Do not force a commit to simplify handoff; hold later work if required isolation/dependencies cannot be established.
 
 ## Prompt Output Hygiene
 
