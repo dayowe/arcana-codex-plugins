@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Experimental preview — `0.2.0-alpha.5`.** Stable `0.1.5` is preserved on `master`. This branch changes Orchestrator's boundary; old whole-checklist launch prompts must explicitly select Coordinator rather than silently losing scope. No installation, migration execution, measured savings or unattended-runtime qualification is implied by the files or structural validators. Qualify the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution. Do not mix stable and preview role instructions in one run.
+**Stable release: `0.2.0`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -84,7 +84,7 @@ Example `.agents/plugins/marketplace.json`:
 
 ## Install From Git
 
-These commands select stable `master`, not this experimental branch. Preparing preview files does not authorize installation or replace existing sessions. A preview installation needs an explicit checkout/ref selection and version verification before use; do not run the stable commands expecting this preview.
+These commands select the stable release on `master`. Verify the installed version before use; updating repository files does not replace the skills loaded in existing sessions.
 
 Add the stable marketplace repository:
 

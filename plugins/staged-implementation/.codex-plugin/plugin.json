@@ -1,15 +1,15 @@
 {
   "name": "staged-implementation",
-  "version": "0.2.0-alpha.5",
-  "description": "Experimental coordinated staged implementation with planner, coordinator, bounded orchestrator, implementer, and validator roles.",
+  "version": "0.2.0",
+  "description": "Coordinated staged implementation with planner, coordinator, bounded orchestrator, implementer, and validator roles.",
   "author": {
     "name": "Local developer"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "Staged Implementation (Coordinated Preview)",
+    "displayName": "Staged Implementation",
     "shortDescription": "Coordinate a run or execute a bounded implementation chunk.",
-    "longDescription": "Experimental two-entry workflow: a run coordinator dispatches fresh bounded orchestrators, each preserving actual-diff review, independent validation and authorized acceptance. Direct orchestration remains available for bounded work.",
+    "longDescription": "Two-entry workflow: a run coordinator dispatches fresh bounded orchestrators, each preserving actual-diff review, independent validation and authorized acceptance. Direct orchestration remains available for bounded work.",
     "developerName": "Local developer",
     "category": "Productivity",
     "capabilities": [],
