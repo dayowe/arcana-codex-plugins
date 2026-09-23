@@ -22,6 +22,12 @@ Check that final results carry ownership/resource handoff without post-completio
 
 Hold unattended qualification on any unresolved authority, candidate, recovery or capacity failure. Propose direct/manual execution only as an explicit alternative, not an automatic fallback. Additional nested reviews require available capacity; do not drop a required review or change models to fit.
 
+## Optional Routing Qualification
+
+Only when a role-specific policy is requested, qualify its supported controls and metadata using the [Execution Routing](execution-contract.md#execution-routing) contract. Reuse applicable evidence; this is not an additional per-chunk trial or a new gate for default runs. Use an authorized harmless fixture assignment to check the requested arrangement across the relevant delegation boundaries: mixed models, effort-only overrides or inheritance as applicable. Do not introduce an unrequested model change solely for qualification. Compare requested settings with runtime-observable effective settings for the actual workers; do not accept worker self-reports as proof.
+
+Check handling of an explicit model without effort, a root-setting mismatch, unsupported controls, known effective-setting mismatches and unavailable metadata. These failure paths can be reviewed with fixture metadata rather than deliberately starting unsupported or incorrectly configured production workers. A missing effort must be resolved; affected work remains held for mismatches/unsupported settings, and unobservable settings require an explicit limitation authorization without being relabeled verified. Preserve all normal independent review and acceptance gates. Record what was actually exercised and what remains untested; document-only review does not qualify live mixed-model routing.
+
 ## Real-Work Trial
 
 After mechanics pass and the user authorizes the target, run a short eligible sequence with unchanged models, contracts, acceptance cases and required independent/integration/platform gates. Choose chunk boundaries for coherent work rather than arbitrary token limits; keep the orchestrator through its correction loop.

@@ -15,6 +15,22 @@ Shared by Coordinator and Orchestrator. Use existing prompt, handoff and chunk-e
 
 In coordinated mode, the orchestrator owns its chunk prompt, review, evidence and acceptance record; the coordinator owns global scheduling/readiness/status records. The orchestrator returns proposed global updates rather than editing them concurrently. If a shared contract must change, hold affected work and route it for authoritative reconciliation. Direct mode folds run duties into the orchestrator only for the explicitly bounded assignment.
 
+### Execution Routing
+
+Without an explicit routing policy, preserve the existing authorized model/effort. Do not add routing questions or a new verification gate to ordinary default runs. An authorized plan or launch instruction may optionally specify model/effort by role; a Markdown table under `Execution Routing` is sufficient, not required syntax. Carry the complete policy and its authority source through delegation, including roles the receiving agent will dispatch.
+
+Resolve each spawned role against its immediate parent's authorized configuration:
+
+- Omitted role: inherit model and effort.
+- Omitted model or `inherit`, with an explicit effort: inherit the model and override effort.
+- Explicit model identifier: require an explicit supported effort, even when the model matches the parent. Do not guess a missing effort or substitute a model's default.
+
+A root role entry is a requirement for the existing session, not a command that changes it. This applies to Coordinator and to a directly invoked Orchestrator or other root role. In a root entry, `current session` means retain its existing model, not a model identifier; an explicit effort still states a session requirement. Check requested root settings against observable session settings; resolve mismatches before affected work. Use exact supported identifiers for descendant overrides and supported context/spawn controls; never claim that putting settings in a prompt configures the runtime. If the required override is unsupported, hold the affected assignment. Do not change model/effort as a capacity fallback, test-failure response or automatic escalation outside explicit authority.
+
+For opted-in routing, distinguish the **requested route** from the **effective route** established by the runtime. The dispatching parent verifies effective model/effort using runtime-observable metadata when available; a worker's self-report, assignment label or submitted spawn arguments alone are not proof. Use applicable recorded qualification and readily available assignment metadata. If verification requires a child to start first, keep its substantive work held until the check is resolved. A known mismatch leaves the assignment unqualified. If effective settings cannot be observed, record them as unverified and hold the requested arrangement unless the user explicitly authorizes proceeding with that limitation; this exception does not authorize a known mismatch.
+
+Record the resolved request, evidence pointer and verification status or explicit limitation authorization in the existing assignment/handoff. Reuse applicable qualification; do not scan whole transcripts or spawn diagnostic agents for every chunk. Recheck when runtime, configuration, policy or relevant evidence changes. Same-worker repairs retain their configuration; do not assume a follow-up changes it. If an authorized change needs a replacement, preserve candidate/ownership transfer and assignment-attempt rules. Routing never reduces acceptance cases, actual-diff review, independent validation or later gates; verifying a route is not proof of implementation quality.
+
 ### Assignment labels
 
 Establish one non-secret run ID in the existing handoff before dispatch. Preserve it across session restarts/resume and pass it unchanged to descendants; distinct runs use distinct IDs. The logical assignment is run ID + scope (`chunk` or `group`) + exact chunk/gate or named-group ID + role + attempt. A group names its members explicitly; its workers use their actual assigned chunk or group, not an inferred allocation. Same-worker correction/revalidation retains identity; a fresh replacement increments the attempt for that run/scope/unit/role, including after resume. Do not reuse an assignment ID for a different worker.

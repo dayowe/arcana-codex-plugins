@@ -1,6 +1,6 @@
 {
   "name": "staged-implementation",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Coordinated staged implementation with planner, coordinator, bounded orchestrator, implementer, and validator roles.",
   "author": {
     "name": "Local developer"

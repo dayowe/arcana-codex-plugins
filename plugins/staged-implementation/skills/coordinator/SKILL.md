@@ -13,6 +13,8 @@ Resolve project context from applicable instructions, the current plan/checklist
 
 Before dispatch, read the shared [Execution Contract](references/execution-contract.md). Apply the single [Resource Lifecycle](../orchestrator/references/resource-lifecycle.md) procedure before initial persistence verification and relevant resource operations. These references govern assignments and resources; do not reproduce them as parallel run documents.
 
+Apply optional [Execution Routing](references/execution-contract.md#execution-routing) without changing the default when no policy exists. Check any root requirement, resolve the orchestrator route, and pass the complete authorized policy for its descendants. Verify requested versus effective settings under that contract before affected substantive work; record evidence or unresolved limitations in the existing handoff, not a separate routing journal.
+
 ## Establish the Run
 
 1. Read project instructions and identify the authoritative plan, checklist, prompt map, readiness audit and current execution handoff. Verify actual Git/worktree state and protected pre-existing changes. Confirm planning checkpoint or explicit uncommitted disposition. If missing and no planning-commit authority exists, finish applicable document checks, identify the exact proposed files/commit and ask before execution. Planning and implementation commit authority remain separate.

@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.0`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.1`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -121,6 +121,21 @@ The usual flow is:
 
 Ordinary progress questions, such as "progress update" or "how's it going?", default to a brief [progress snapshot](skills/coordinator/references/execution-contract.md#user-requested-progress-snapshots). Each question requests one snapshot from the active orchestrator, reusing an already-pending request for that assignment; if none is active, the coordinator reports the latest known outcome. The orchestrator answers from existing knowledge without cascading worker queries or extra checks. Explicitly ask for investigation, fresh verification or a detailed review to override that default within existing authority; requesting an update does not start periodic reporting.
 
+## Optional Model and Reasoning Policy
+
+By default, preserve the already-authorized model and reasoning effort. The workflow does not automatically choose cheaper models. To request different configurations, include an optional `Execution Routing` section in the approved plan or launch instruction. For example:
+
+| Role | Model | Reasoning |
+| --- | --- | --- |
+| Coordinator | current session | high |
+| Orchestrator | gpt-6-astra | high |
+| Implementer | gpt-5.6-luna | medium |
+| Validator | gpt-6-astra | high |
+
+This is an illustrative policy, not a model recommendation or availability guarantee. Use identifiers and efforts supported by your runtime. Every explicit model needs an explicit effort. An effort-only entry inherits the parent's model; an omitted role inherits both settings. A root entry describes the required existing session settings and does not change them. The same root rule applies when invoking Orchestrator directly.
+
+The [routing contract](skills/coordinator/references/execution-contract.md#execution-routing) requires runtime evidence of effective settings for opted-in routing; a worker's self-report is insufficient. Unsupported routes or known mismatches hold affected work. Unobservable settings remain unverified and require explicit user authorization to proceed with that limitation. No new verification gate is imposed on default runs. Required validation and acceptance remain unchanged; choosing a cheaper model does not guarantee equivalent results or lower total effort through acceptance.
+
 ## Execution Ownership
 
 | Responsibility | Owner |
@@ -136,7 +151,7 @@ The [shared execution contract](skills/coordinator/references/execution-contract
 
 The orchestrator stays through same-chunk corrections. At a bounded result, it hands over ownership/resources in final results and retires descendant assignments. Coordinator verifies the handoff, then dispatches normally using supported explicit closure or automatic runtime reclamation. No post-completion retirement messages or per-assignment capacity probes are required. Nested delegation, scoped context and successive complete worker groups must be qualified. Actual capacity failures use the shared [bounded recovery procedure](skills/coordinator/references/execution-contract.md#worker-retirement-and-capacity); missing `close_agent` alone is not a blocker. Unresolved runtime failures hold the coordinated loop; direct/manual execution requires an explicit alternative, not silently weakened validation.
 
-The existing plan/checklist/prompt map and one live handoff remain authoritative. No new run database, duplicated transcript archive, standing reviewer, model downgrade or automatic external runner is introduced. User pauses, commit policies and later device/integration/release gates remain binding. A result can be accepted uncommitted, committed but not integrated, or locally accepted with later gates pending; those states are not interchangeable.
+The existing plan/checklist/prompt map and one live handoff remain authoritative. No new run database, duplicated transcript archive, standing reviewer, automatic model downgrade or automatic external runner is introduced. User pauses, commit policies and later device/integration/release gates remain binding. A result can be accepted uncommitted, committed but not integrated, or locally accepted with later gates pending; those states are not interchangeable.
 
 ## Lifecycle and Context Efficiency
 

@@ -6,7 +6,7 @@ Codex plugin marketplace for reusable agent workflows.
 
 - `staged-implementation`: Planner, coordinator, bounded orchestrator, implementer and validator skills for staged implementation workflows.
 
-The current stable release is `0.2.0` on `master`. Use Coordinator for a full staged run and Orchestrator for bounded work. See the plugin README for upgrade guidance and runtime qualification requirements. Repository updates do not update installed skills automatically.
+The current stable release is `0.2.1` on `master`. Use Coordinator for a full staged run and Orchestrator for bounded work. See the plugin README for upgrade guidance and runtime qualification requirements. Repository updates do not update installed skills automatically.
 
 ## Install
 

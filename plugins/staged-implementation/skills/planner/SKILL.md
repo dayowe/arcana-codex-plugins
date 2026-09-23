@@ -279,6 +279,8 @@ Respect explicit instructions to leave the planning package uncommitted. Record 
 
 Choose the entry point explicitly: `$orchestrator` for one chunk/gate or a named coherent group; `$coordinator` for unattended run-wide scheduling with fresh bounded orchestrators. Preserve the requested work: an older whole-checklist orchestrator prompt needs an explicit entry-point/boundary update, not a silent one-chunk truncation or an accidental second scheduling loop. Do not change existing chunk IDs, contracts or gates merely to adopt the execution model.
 
+When role-specific model/effort routing is explicitly requested, capture it in the approved plan and handoff under the shared [Execution Routing](../coordinator/references/execution-contract.md#execution-routing) rules. An optional Markdown table is enough; no new config file is required. Specify effort with every explicit model, preserve inheritance for omitted roles, and distinguish root-session requirements from descendant overrides. Otherwise retain existing model/effort authority without generating a routing section or asking new setup questions.
+
 When asked for an execution handoff, treat it as an official durable artifact. Save at the requested path or established companion plan/checklist/prompt-map location, with a descriptive filename. State the path; ask only when the location or authority cannot be established, not solely because a filename was omitted. Do not overwrite unrelated artifacts. Honor explicit chat-only output and reread saved handoffs.
 
 Read the shared [Execution Contract](../coordinator/references/execution-contract.md) when preparing either handoff. Every execution handoff must include:
