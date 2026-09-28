@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.1`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.2`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -155,13 +155,15 @@ The existing plan/checklist/prompt map and one live handoff remain authoritative
 
 ## Lifecycle and Context Efficiency
 
+Create only artifacts the task needs. These rules do not mandate new workspaces, evidence packages, manifests or separate reports. A simple chunk can use the existing checkout, normal ignored build output and a brief result in an existing checklist/review. Disposable diagnostic helpers need not become maintained project files; preserve them when required for reproduction. Required validation and evidence still take precedence.
+
 The workflow keeps implementation and validation rigor while avoiding avoidable context churn:
 
 - Each worker carries stable run/unit/assignment identity using the [shared label convention](skills/coordinator/references/execution-contract.md#assignment-labels), with a recorded mapping to the tool label, actual worker and immediate parent. Resume preserves the run ID; same-worker corrections retain assignment identity; replacement workers increment the attempt.
 - An implementer may remain available for same-chunk repairs but cannot write during validation. Replacements acquire write ownership only after prior writes stop and the candidate, findings and resources are verified and transferred.
 - Accepted/blocked/end-of-assignment workers retire after verified handoff: stop assigned work and leave completed workers idle, using supported closure or automatic reclamation. Assignment retirement, stopped turns, resource transfer and runtime slot release are distinct. Default coordinated scheduling is one active assignment at a time; broader concurrency requires explicit qualified authority. Idle availability alone does not demonstrate token expense.
 - Workers return one compact packet and stop until a concrete follow-up. Avoid acknowledgement chatter; retain justified liveness checks, intervention and blocker reporting.
-- The existing durable handoff stays compact while preserving pending gates, dependencies, recovery obligations and authority restrictions directly or through authoritative links.
+- One maintained chunk record carries implementation results, independently attributed verdicts, corrections, acceptance and evidence links; routine fixes do not automatically create new prompt/report/receipt series. Separate useful contracts and required installation handoffs remain appropriate. The live run handoff links these records while preserving pending gates, dependencies, recovery and authority restrictions.
 - Parent review starts from the actual diff, requirements and evidence, inspecting surrounding code, callers and shared behavior as needed without waiting for a discovered defect.
 - Read the resource reference for initial persistence verification before edits and before substantial allocations (including large builds in the main checkout), worktree/resource management or cleanup. Reuse applicable instructions and verified setup rather than reloading them for routine steps.
 
@@ -174,7 +176,9 @@ These are efficiency rules, not acceptance shortcuts. Required independent valid
 - `orchestrator` may commit accepted chunks only when the user explicitly authorizes commits.
 - Coordinator forwards existing commit authority without expanding it; global-record commits need applicable documentation authority and exclusive Git access after candidate release.
 - Unfinished source, backing Git metadata and required evidence live on persistent storage from creation. Prefer the project's established worktree location; ask once if isolation needs a new location. `/tmp` is for reproducible scratch, never the only copy of unfinished work. Nested worktree paths must be ignored, untracked and protected from broad cleanup.
-- Authorizing orchestration includes routine cleanup of its tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. The handoff states this default; explicit retention/no-deletion instructions override it. Shared caches, unrelated files and resources still needed remain protected.
+- Follow [Artifact Placement](skills/orchestrator/references/resource-lifecycle.md#artifact-placement): authored source, reusable tests and concise records remain visible for intentional Git inclusion; generated environments/builds use verified ignored workspace paths outside authored docs; required evidence has persistent destinations and a retention purpose. Persistence does not mean committing or keeping everything forever. Preserve prior candidate/failure identity before revising records; Git history does not preserve uncommitted evidence.
+- Where cleanup is planned, establish named roots and authority at launch. Routine orchestration cleanup applies only where project/user rules permit; explicit destructive-action authorization requirements take precedence and must be obtained or reused before deletion. No repeated approval is needed within granted bounds, and no cleanup approval is needed when no deletion is planned. Shared caches, unrelated files, needed Git metadata and active consumers remain protected.
+- Orchestrator resolves chunk resources; Coordinator revisits retention when downstream gates finish. Retain bulky workspaces only for named consumers/release conditions, and distinguish implementation acceptance from cleanup pending. Preserve necessary original observations, unique work, reproduction inputs and identified deployed/recovery artifacts before authorized release. Apply prospectively; historical cleanup is a separate task.
 - If the same skill names also exist as standalone local skills, Codex may show duplicates. After the plugin is installed and verified, remove or disable the standalone copies if you want only the plugin version.
 
 ## Development

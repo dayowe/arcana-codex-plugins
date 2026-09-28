@@ -121,7 +121,7 @@ For each authorized ready unit within the assignment (validation-only gates need
 
 ## Run State and Worker Lifecycle
 
-Keep the existing chunk record sufficient for recovery: candidate/baseline, worker ownership, findings, evidence, authority and retained consumers. Return these to the coordinator's one live run handoff; do not create a competing global status record. Direct mode uses the existing bounded handoff. Preserve future gates, dependencies and recovery obligations through authoritative links. Do not load accepted-chunk narratives or full logs unless applicable to current work.
+Maintain the existing chunk entry/record under [Result and Durable Handoff](../coordinator/references/execution-contract.md#result-and-durable-handoff); do not require a separate file. Include candidate/baseline, implementation and independent results, acceptance, and findings/evidence/resource obligations as applicable. Simple work can use a few lines in an existing checklist/review. Preserve original failures/candidate history before revision; serialize record writes without altering frozen inputs. Link the result in Coordinator's handoff instead of creating report/review/receipt series. Direct mode uses the existing bounded handoff. Independently useful contracts, required installation handoffs and future gate/dependency links remain necessary.
 
 Attribute workers using the [shared assignment-label contract](../coordinator/references/execution-contract.md#assignment-labels): propagate the coordinator's run ID, or establish/recover it in the direct-mode handoff. Encode the exact unit scope/ID, role and attempt for supported task names; record the mapping to actual workers and immediate parents. Use implementer modes `new-chunk | correction | replacement` and validator modes `validation | revalidation | replacement`. Same-worker corrections/revalidation retain identity; a fresh replacement increments the attempt, including after resume. A next-chunk worker uses the new chunk's ID. Tool limitations require an explicit mapping, not guessed truncation or a new run ID.
 
@@ -227,8 +227,8 @@ When spawning an implementer sub-agent:
 - instruct it to edit files directly if the runtime supports sub-agent code edits
 - instruct it not to commit
 - keep the task narrow and self-contained
-- assign the verified persistent source workspace and evidence destinations; workers must not relocate implementation into disposable storage
-- pass cleanup scope, retention requirements and disk/allocation restrictions; require workers to report exact owned resource paths and outstanding consumers on handoff
+- assign persistent source, visible authored deliverables, verified ignored environment/output paths and durable required-evidence destinations; no dependency installations or build trees under docs
+- pass named cleanup roots and applicable authority/restrictions, purpose-specific retention and disk/allocation limits; require resource disposition and remaining consumers, not blanket preservation
 - avoid delegating planner/reviewer decisions
 - wait only when the result is needed for the next critical-path step
 
@@ -241,8 +241,8 @@ When invoking a validator pass:
 - provide the exact expected behavior, frozen contracts and candidate identity: baseline revision plus scoped changes (including relevant untracked inputs), and the relevant build/artifact and its source provenance
 - release implementer writes before validation; prevent overlapping writes to the validated scope, relevant harness/configuration inputs, or replacement of the tested build/target until the pass is released
 - provide approved credential or environment sources only when needed
-- pass persistent evidence/recovery destinations and identify the durable source behind any disposable validation copy
-- pass the run's bounded cleanup scope and any restrictions, retention requirements, disk thresholds and allocation restrictions; require owned-resource handoff
+- pass persistent required-evidence destinations, visible authored test/script paths, ignored validation-environment paths and the durable source behind disposable copies
+- pass named cleanup roots, authority/restrictions, retention consumers/release conditions and allocation limits; require attributable verdicts and resource disposition in the existing record/evidence locations
 - ask for pass/fail/blocked evidence, residual risk, and untested areas
 - do not ask the validator to edit production code or commit
 - review the validator's evidence before accepting the chunk
@@ -265,13 +265,13 @@ Use targeted searches/relevant sections and programmatic extraction from large l
 
 Batch compatible independent reads/mechanical checks and inspect every result together. Preserve individual statuses; tests sharing ports, fixtures, generated files or build destinations remain sequential unless isolation is established. Keep dependent edits, mutations, approvals and decisions sequential. Apply existing candidate-freeze and disk-allocation rules; do not hide failures inside a large command batch. Use browser inspection for relevant visual/focus behavior and discrepancies rather than automatically repeating the full matrix with every tool. Retain every required case at its assigned gate and all mandated fresh checks; local/reused evidence cannot silently pass a later platform gate.
 
-Report concise differences, counts, failures, skipped/not-tested obligations, evidence limits and artifact paths; retain raw logs/artifacts and inspect unexpected output. Link any existing canonical input record and detailed results instead of regenerating/reproducing unchanged inventories, hashes or packages. Apply process improvements prospectively; do not reorganize historical evidence merely to match a new convention. Briefly record causes of recurring setup failures or reasons for repeated checks in the existing report, not a new tracking system. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
+Report concise differences, counts, failures, skipped/not-tested obligations, evidence limits and paths; preserve required original observations and reproduction inputs under the resource retention rules, not whole environments by default. Inspect unexpected output and link existing candidate records/results instead of regenerating inventories or packages. Update the chunk record for corrections; preserve prior candidate/failure identity. Apply prospectively without reorganizing historical evidence. Briefly record causes of repeated checks/setup failures there. Efficiency does not authorize model changes, missed cases, weaker contracts or unsafe rollback.
 
 ## Resource Lifecycle
 
 Unfinished source, backing Git metadata and required evidence must be durable from creation. Before delegating edits, verify the resolved checkout, backing Git/common-directory storage and evidence destinations under the reference's persistence procedure; an existing checkout is not automatically suitable. Reuse that verification only while paths/storage remain demonstrably unchanged. `/tmp` and other disposable locations may hold only reproducible copies. Keep a compact ownership/consumer/release record, preserve evidence and uncommitted work until their retention conditions are satisfied, and never infer cleanup authority from names, age or location.
 
-In coordinated mode, subdivide the coordinator's allocation among workers and coordinate increases/shared-target use before starting them. Report actual paths/consumers/remaining allocations; the coordinator owns the run-wide total and later retention. In direct mode, perform that run-owner duty within the assignment. Neither mode permits concurrent candidate/index mutations by coordinator and orchestrator.
+In coordinated mode, subdivide Coordinator's allocation and coordinate increases/shared targets before use. Before dispatch, enforce the reference's artifact placement and verify cleanup authority against project restrictions. At validation release, acceptance, abandonment or handoff, resolve chunk resources as in use, specifically retained, or disposable and perform authorized eligible cleanup. Transfer exact remaining owners/consumers/release conditions, not all artifacts indiscriminately; Coordinator resolves later gate-dependent retention. In direct mode, own both duties within scope. Neither mode permits concurrent candidate/index mutations by coordinator and orchestrator.
 
 Read and apply [Resource Lifecycle](./references/resource-lifecycle.md) for that initial persistence verification and before creating/reusing worktrees or disposable build/test copies, large builds (including in the main checkout), dependency/browser installations, archives or other substantial allocations, and cleanup/storage recovery. It defines persistence, coordinated disk-headroom checks, evidence retention and bounded cleanup. Reuse already-read instructions and verified setup where applicable rather than reloading the reference for every routine step.
 

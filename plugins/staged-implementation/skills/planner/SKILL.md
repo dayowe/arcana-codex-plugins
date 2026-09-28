@@ -118,7 +118,9 @@ Do not create separate prompts just because a second file is touched, a helper i
 
 ## Planning and Evidence Proportionality
 
-Give each artifact one job: plan = architecture/rationale; checklist = work/dependencies/acceptance; prompt map = assignment routing/inputs; prompt = bounded execution pass. Link authoritative contracts or restate the exact applicable subset instead of copying whole contracts into every artifact. Preserve all applicable obligations and make them accessible to a fresh worker.
+Create only artifacts required to implement, validate and hand off the actual task. Storage/reporting rules govern needed artifacts; they do not require new workspaces, evidence packages, manifests or separate reports. Reuse existing checklist/review entries for simple chunks. Do not import a large migration's evidence requirements into unrelated work; explicitly mandated acceptance evidence remains required.
+
+Give each artifact one job: plan = architecture/rationale; checklist = work/dependencies/acceptance; prompt map = assignment routing/inputs; prompt = bounded execution pass. Link authoritative contracts or restate the applicable subset instead of copying whole contracts. Plan one maintained chunk record under [Result and Durable Handoff](../coordinator/references/execution-contract.md#result-and-durable-handoff), with attributed independent results and evidence links. Routine corrections update it using bounded follow-ups; do not automatically prescribe a new proposal/prompt/report/review/receipt series. Separate independently useful contracts or required installation handoffs remain appropriate. Preserve all applicable obligations.
 
 Efficiency changes organization and communication, not what must be understood, implemented or proven. Required correctness and acceptance obligations take priority over token savings; do not impose token/turn caps that force incomplete work.
 
@@ -130,7 +132,9 @@ Specify evidence reuse conditions: relevant source, harness, dependencies, confi
 
 Plan persistent implementation storage from the first edit, including backing Git metadata. Use the existing checkout for safe sequential work; when isolation is needed, prefer the project's established persistent worktree location and reuse the same workspace for same-chunk corrections. If no suitable convention or authorized location exists, propose one dedicated location and ask once before creation; never automatically create sibling directories or fall back to `/tmp`. For nested worktrees, require the paths to be ignored and untracked in the containing repository and protected from broad cleanup. Record the location in the handoff. Required evidence/recovery artifacts also need persistent destinations from creation; a pause-time copy or a transcript is not a durability strategy. This does not authorize premature commits or change acceptance gates.
 
-Plan the temporary-resource lifecycle alongside validation: identify required evidence/recovery retention, durable destinations and release conditions for disposable checkouts, builds and browser profiles. Put a compact ownership/retention record in the existing handoff, not another reporting system. Require headroom checks before large allocations and prefer compatible existing environments when reuse preserves isolation and candidate identity. Copying large workspaces elsewhere on the same filesystem does not reclaim space; generated artifacts do not belong in Git by default.
+Before writing assignments, apply [Artifact Placement](../orchestrator/references/resource-lifecycle.md#artifact-placement): authored deliverables/reusable tests stay visible for intentional Git inclusion; copied source, extracted dependencies, environments and generated outputs use verified ignored workspace paths outside authored docs; required evidence has persistent, purpose-specific destinations. Reject prompts that put build/test environments under evidence/docs or hide authored work with broad ignore rules. Persistence does not mean committing or retaining everything forever.
+
+Plan retention alongside validation: name each bulky resource's consumer/release condition and the parent responsible for disposition when that consumer finishes. Preserve necessary original observations, unique work, reproduction inputs and identified deployed/recovery artifacts, not every environment copy by default. Put grouped ownership/retention entries in the existing handoff; no per-file inventory. Require headroom checks and reuse compatible environments where isolation permits. Do not generate blanket "preserve all inputs/results" or permanent no-cleanup instructions; existing explicit restrictions still require reconciliation before release.
 
 Carry disk defaults into assignments without asking for routine configuration: below 5 GiB free warns/serializes large allocations; 2 GiB or less pauses write-heavy work and reports a blocker. Allow explicit project/run overrides, recorded in the handoff. Require parent coordination of concurrent additional peak usage on each receiving filesystem so admitted operations leave more than the critical reserve; disk-full/quota/inode errors stop affected writes regardless of thresholds.
 
@@ -297,8 +301,8 @@ Read the shared [Execution Contract](../coordinator/references/execution-contrac
 - validation expectations
 - commit policy
 - planning checkpoint status: verified baseline or explicit uncommitted disposition under **Planning Checkpoint Before Orchestration**
-- cleanup scope: routine run-owned cleanup default, applicable restrictions, required retention and resource handoff
-- persistent implementation/evidence locations, or the location decision required before dependent work starts
+- cleanup scope when disposal is planned: named workspace roots, authority source or pending explicit authorization, restrictions, retention purposes and release owners/conditions; omit unused resource fields
+- persistent source/evidence destinations, ignored environment/output paths and visible authored deliverables, or the location decision required before dependent work starts
 - stopping conditions
 
 For a coordinator launch, delegate global scheduling/status and shared-resource management to Coordinator; actual-diff review, independent validation, acceptance and scoped commits remain with the active bounded Orchestrator. Require runtime qualification for nested delegation, scoped context/model preservation and recycling worker capacity before consequential execution. Start with one active orchestrator assignment at a time. The coordinator verifies completion without routinely repeating the chunk review. Reuse the existing live handoff and chunk evidence locations; no second journal or automatic transcript forwarding.
@@ -309,7 +313,7 @@ State the [shared lifecycle](../coordinator/references/execution-contract.md#wor
 
 Use the [shared assignment-label contract](../coordinator/references/execution-contract.md#assignment-labels) for both execution entry points. Establish/recover one stable run ID, preserve it on resume and propagate it to descendants. Same-worker corrections/revalidation retain identity; fresh replacements increment the attempt. Require the shared encoding for supported task names and the logical-assignment/tool-label/actual-worker mapping with immediate parent in the existing handoff. Tool limitations require an explicit mapping, not silent truncation or assumed telemetry attribution.
 
-State in the handoff that authorization to run orchestration includes routine cleanup of that run's tracked, disposable temporary resources after ownership, retention and consumer-release checks pass. No separate cleanup approval question is needed within those bounds. Carry this scope into worker assignments and honor explicit retention/no-deletion instructions and higher-priority restrictions. On resuming the same run, accumulated resources qualify only after their run ownership and release conditions are verified and recorded. Unknown ownership, shared caches, files predating the run, unrelated resources and anything still needed remain excluded. Standalone planning/implementation/validation or commit permission does not grant this orchestration cleanup scope; ask for concrete additional authority only when needed outside it. Never propose blanket clearing of `/tmp`.
+Where resource disposal is planned, establish cleanup authority at launch under [Temporary Resources and Cleanup](../orchestrator/references/resource-lifecycle.md#temporary-resources-and-cleanup). State the named roots and bounded scope. If project instructions require explicit destructive-action authorization, obtain or reuse it once before relying on deletion; the orchestration default cannot override that requirement. Carry granted authority without repeated approval requests; absent authority means cleanup pending. With no deletion planned, do not ask a cleanup question. Exclude unrelated/pre-existing files, shared caches, needed Git metadata and active/retained consumers; no symlink traversal or broad `/tmp` clearing. Do not turn an unresolved authority issue into indefinite blanket retention.
 
 The commit policy must be explicit and must use one of:
 
@@ -352,7 +356,7 @@ Before presenting or saving a prompt:
 
 ## Durable Review Artifacts
 
-When the staged workflow is maintaining on-disk artifacts, do not leave review outcomes only in chat. Save or update review notes or outcomes beside the companion plan/checklist unless the user explicitly asks for chat-only review.
+When the workflow requires durable artifacts, update the existing chunk record under [Result and Durable Handoff](../coordinator/references/execution-contract.md#result-and-durable-handoff), rather than leaving outcomes only in chat or creating another review document by default. Honor explicit chat-only requests and independently useful separate records.
 
 A review outcome should capture:
 
@@ -362,7 +366,7 @@ A review outcome should capture:
 - validation status and residual risk
 - next recommended action
 
-Maintain one current outcome per chunk and one live execution handoff. Link raw evidence and distinct reviewer verdicts instead of duplicating their narratives across plan/checklist/map. Preserve historical failures; update scheduling artifacts when contracts or dependency state change, not after every tool call.
+Maintain one current outcome per chunk and one live execution handoff. Keep independent reviewer attribution, candidate identity and original failure evidence recoverable before updating results; uncommitted prior versions are not preserved by Git history. Link evidence rather than duplicating narratives across plan/checklist/map. Update scheduling artifacts for changed contracts/dependencies, not every tool call. Apply prospectively without reorganizing historical artifacts merely to fit the convention.
 
 ## Review Rules
 
