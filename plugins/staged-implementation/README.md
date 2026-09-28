@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.2`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Release status and structural validators do not establish runtime qualification or measured savings for a particular setup. Qualify an unverified runtime using the [pilot](skills/coordinator/references/pilot-validation.md) before consequential coordinated execution, or reuse applicable recorded qualification. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.3`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -149,7 +149,7 @@ The [routing contract](skills/coordinator/references/execution-contract.md#execu
 
 The [shared execution contract](skills/coordinator/references/execution-contract.md) defines assignment/results and recovery boundaries. Start with one active Orchestrator assignment at a time; groups name their IDs and preserve individual gates. Coordinator does not repeat routine source review, tests or screenshots. It verifies actual repository results and evidence completeness/applicability, escalating discrepancies. Only Coordinator writes run-wide scheduling records; only Orchestrator writes chunk acceptance records. Coordinate shared Git mutations explicitly.
 
-The orchestrator stays through same-chunk corrections. At a bounded result, it hands over ownership/resources in final results and retires descendant assignments. Coordinator verifies the handoff, then dispatches normally using supported explicit closure or automatic runtime reclamation. No post-completion retirement messages or per-assignment capacity probes are required. Nested delegation, scoped context and successive complete worker groups must be qualified. Actual capacity failures use the shared [bounded recovery procedure](skills/coordinator/references/execution-contract.md#worker-retirement-and-capacity); missing `close_agent` alone is not a blocker. Unresolved runtime failures hold the coordinated loop; direct/manual execution requires an explicit alternative, not silently weakened validation.
+The orchestrator stays through same-chunk corrections. At a bounded result, it hands over ownership/resources in final results and retires descendant assignments. Coordinator verifies the handoff, then dispatches normally using supported explicit closure or automatic runtime reclamation. No post-completion retirement messages or per-assignment capacity probes are required. Actual capacity failures use the shared [bounded recovery procedure](skills/coordinator/references/execution-contract.md#worker-retirement-and-capacity); missing `close_agent` alone is not a blocker. Unresolved runtime failures hold the coordinated loop; direct/manual execution requires an explicit alternative, not silently weakened validation.
 
 The existing plan/checklist/prompt map and one live handoff remain authoritative. No new run database, duplicated transcript archive, standing reviewer, automatic model downgrade or automatic external runner is introduced. User pauses, commit policies and later device/integration/release gates remain binding. A result can be accepted uncommitted, committed but not integrated, or locally accepted with later gates pending; those states are not interchangeable.
 
@@ -195,7 +195,7 @@ Validate an individual skill:
 python3 /path/to/skill-creator/scripts/quick_validate.py /path/to/staged-implementation/skills/planner
 ```
 
-Validate all five skills and the plugin; inspect relative references and cross-role authority consistency. Use the pilot procedure for mechanics, recovery and real-work evidence. Passing file validators is not a behavioral or efficiency verdict.
+Validate all five skills and the plugin; inspect relative references and cross-role authority consistency. The [pilot procedure](skills/coordinator/references/pilot-validation.md) is only for explicitly requested workflow-development testing. A new runtime, missing report or plugin upgrade does not automatically trigger it or a request to authorize it. Passing file validators is not a behavioral or efficiency verdict.
 
 After an explicitly selected release/ref is published, run `codex plugin marketplace upgrade arcana-codex-plugins`.
 
