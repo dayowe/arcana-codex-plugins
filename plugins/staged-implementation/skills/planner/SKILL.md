@@ -122,6 +122,8 @@ Do not create separate prompts just because a second file is touched, a helper i
 
 Create only artifacts required to implement, validate and hand off the actual task. Storage/reporting rules govern needed artifacts; they do not require new workspaces, evidence packages, manifests or separate reports. Reuse existing checklist/review entries for simple chunks. Do not import a large migration's evidence requirements into unrelated work; explicitly mandated acceptance evidence remains required.
 
+Apply [Bounded Corrections](../coordinator/references/execution-contract.md#bounded-corrections) when planning follow-ups. Distinguish required acceptance outcomes and explicitly mandated methods from agent-selected checking methods; state any actual method freeze and applicable authority. Preserve required coverage while allowing equivalent methods under that contract.
+
 Give each artifact one job: plan = architecture/rationale; checklist = work/dependencies/acceptance; prompt map = assignment routing/inputs; prompt = bounded execution pass. Link authoritative contracts or restate the applicable subset instead of copying whole contracts. Plan one maintained chunk record under [Result and Durable Handoff](../coordinator/references/execution-contract.md#result-and-durable-handoff), with attributed independent results and evidence links. Routine corrections update it using bounded follow-ups; do not automatically prescribe a new proposal/prompt/report/review/receipt series. Separate independently useful contracts or required installation handoffs remain appropriate. Preserve all applicable obligations.
 
 Efficiency changes organization and communication, not what must be understood, implemented or proven. Required correctness and acceptance obligations take priority over token savings; do not impose token/turn caps that force incomplete work.
@@ -230,7 +232,7 @@ Keep the implementer `Read these first:` list focused:
 - do not include planner/reviewer process docs by default
 - do not list the prompt file itself in its own `Read these first:` block
 
-Use this prompt structure unless the user explicitly requests a different shape:
+Use the full structure for substantial new assignments. For [bounded corrections](../coordinator/references/execution-contract.md#bounded-corrections), reference the original assignment and supply the current candidate, changed instructions, affected scope, validation and completion condition. Carry binding constraints through precise references or applicable excerpts; do not depend on inherited conversation. Preserve assignment identity/mode and the selected skill bundle without regenerating the full prompt.
 
 ```text
 Repo root:
@@ -249,19 +251,7 @@ Test posture:
 If anything is ambiguous, stop and ask instead of guessing.
 ```
 
-Every implementer prompt must carry these default requirements unless the task packet explicitly overrides them:
-
-- Make a plan first and keep it updated.
-- Follow the frozen contracts from the plan exactly.
-- Do not use placeholders such as "same as today" for contract behavior in code or tests.
-- Keep the implementation clean; do not add legacy fallbacks, dual-format parsing, migrations, compatibility paths, or auto-fallback heuristics unless explicitly in scope.
-- Preserve existing behavior for unaffected flows.
-- Use surgical diffs only.
-- Stay inside the declared scope and non-goals.
-- Run the listed validation.
-- Summarize changed files, validation results, blockers, ambiguities, and residual risk.
-- If anything is ambiguous, stop and ask instead of guessing.
-- Propose a one-line commit message for the chunk; if a chunk ID exists, start the message with that exact prefix.
+Require the worker to read the exact Implementer skill path from the selected bundle. Its implementation, planning, self-audit and reporting rules remain binding without copying them into every prompt. Keep task-specific contracts, validation, authority limits and exceptions explicit.
 
 For contract-heavy chunks, add a contract checklist and self-audit requirement:
 

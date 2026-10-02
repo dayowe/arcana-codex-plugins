@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.4`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.5`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -158,6 +158,8 @@ Apply [Supporting Changes and Requirement Authority](skills/coordinator/referenc
 ## Lifecycle and Context Efficiency
 
 Create only artifacts the task needs. These rules do not mandate new workspaces, evidence packages, manifests or separate reports. A simple chunk can use the existing checkout, normal ignored build output and a brief result in an existing checklist/review. Disposable diagnostic helpers need not become maintained project files; preserve them when required for reproduction. Required validation and evidence still take precedence.
+
+[Bounded Corrections](skills/coordinator/references/execution-contract.md#bounded-corrections) make a short follow-up the default for a correction with an established result and understood scope. For example, a localized padding correction can reuse its assignment and setup, receive actual-diff review and independent rendered/responsive checks, and update the existing result. It does not automatically need a new full prompt, harness feature or unrelated regression matrix. Required checks remain binding; one-line changes to shared, security-sensitive or deployment/recovery behavior still receive validation appropriate to their effects. If the assignment also completes integration/device work, identify that work separately. No new approval checkpoint or role change is introduced.
 
 The workflow keeps implementation and validation rigor while avoiding avoidable context churn:
 

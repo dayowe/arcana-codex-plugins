@@ -72,16 +72,16 @@ For each authorized ready unit within the assignment (validation-only gates need
    - Verify the chunk has not already landed.
    - Run `git status --short` and relevant `git log --oneline` checks to verify the chosen chunk has not already landed and that the review target matches the current worktree.
 
-3. Write the implementer prompt.
-   - Produce one surgical prompt for that chunk only.
+3. Write or reuse the implementer instructions.
+   - Apply [Bounded Corrections](../coordinator/references/execution-contract.md#bounded-corrections) to follow-ups; produce appropriately scoped instructions for the assigned chunk only.
    - Apply [Supporting Changes and Requirement Authority](../coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority) when an unexpected prerequisite or supporting change emerges, including during corrections. Establish necessity before prescribing a mechanism; obtain the specified independent challenge before an unplanned change to shared operational policy or persistent tooling defaults. Reuse the existing assignment/result and ordinary review flow for routine fixes.
    - Give the pass a stable `Chunk ID`, `Assignment ID` and mode under **Run State and Worker Lifecycle**.
-   - Save official prompts beside the companion plan/checklist unless the user requests another output path.
-   - Re-read the saved prompt before delegating.
+   - Save official new assignments beside the companion plan/checklist unless the user requests another output path. Corrections use bounded follow-ups referencing the existing assignment; do not save another prompt unless required.
+   - Re-read newly saved or changed instructions before delegating; reuse unchanged instructions after checking applicability.
 
 4. Delegate implementation.
-   - Spawn a fresh implementer sub-agent when possible.
-   - Give the sub-agent the saved prompt and exact `$implementer` skill path from the assignment's selected bundle; preserve bundle identity for all descendants, not the installed name alone.
+   - Reuse the same-chunk repair worker when suitable, after releasing the validation hold. Spawn a fresh implementer for a new chunk or necessary replacement; preserve verified ownership transfer before replacement writes.
+   - Give the sub-agent the saved assignment or bounded follow-up and exact `$implementer` skill path from the assignment's selected bundle; preserve bundle identity for all descendants, not the installed name alone.
    - Use a supported task label mapped to the assignment ID under **Run State and Worker Lifecycle**.
    - Pass only the context needed for that chunk.
    - Tell the sub-agent not to commit and to report changed files, validation, blockers, and proposed commit message.
@@ -100,7 +100,7 @@ For each authorized ready unit within the assignment (validation-only gates need
    - Repeat review/follow-up until accepted, blocked, or stopped by the user.
 
 7. Validate when evidence is required.
-   - Run direct validation yourself for simple build, test, or diff checks.
+   - Review applicable worker evidence. Run additional parent-owned checks when separately required or when a concrete uncertainty needs resolution. Parent actual-diff review does not automatically require repeating successful build, browser or test execution.
    - Keep direct checks on the same stable-candidate/provenance boundary required below for delegated validation.
    - Invoke `$validator` for feature acceptance, regression, contract, UI/browser, runtime, API, device, or integration evidence when a separate validation pass would reduce risk.
    - Give the validator the exact target, applicable frozen requirements, findings and evidence limits; avoid unrelated planning/history context.
@@ -155,7 +155,7 @@ Bound further investigation by a question and an observation that distinguishes 
 
 ## Prompt Writing Rules
 
-Every implementer prompt must include:
+Use the full structure for substantial new assignments. For [bounded corrections](../coordinator/references/execution-contract.md#bounded-corrections), reference the original assignment and supply the current candidate, changed instructions, affected scope, validation and completion condition. Carry binding constraints through precise references or applicable excerpts; do not depend on inherited conversation. Preserve assignment identity/mode and the selected skill bundle without regenerating the full prompt.
 
 ```text
 Repo root:
@@ -174,18 +174,7 @@ Test posture:
 If anything is ambiguous, stop and ask instead of guessing.
 ```
 
-Every implementer prompt must require:
-
-- Make a plan first and keep it updated.
-- Follow the frozen contracts from the plan exactly.
-- Do not use placeholders such as "same as today" for contract behavior in code or tests.
-- Keep the implementation clean; do not add legacy fallbacks, dual-format parsing, migrations, compatibility paths, or auto-fallback heuristics unless explicitly in scope.
-- Preserve existing behavior for unaffected flows.
-- Use surgical diffs only.
-- Stay inside the declared scope and non-goals.
-- Run the listed validation.
-- Summarize changed files, validation results, blockers, ambiguities, and residual risk.
-- Propose a one-line commit message for the chunk; if a chunk ID exists, start the message with that exact prefix.
+Require the worker to read the exact Implementer skill path from the selected bundle. Its implementation, planning, self-audit and reporting rules remain binding without copying them into every prompt. Keep task-specific contracts, validation, authority limits and exceptions explicit.
 
 For contract-heavy chunks, require:
 

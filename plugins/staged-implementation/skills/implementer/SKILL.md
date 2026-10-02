@@ -24,6 +24,8 @@ Expect either:
 
 The prompt should define scope, non-goals, requirements, invariants, validation, and test posture. Under orchestration it should also carry a stable `Chunk ID`, `Assignment ID`, and assignment mode (`new-chunk`, `correction`, or `replacement`) so the parent can distinguish same-chunk repair from next-chunk work. If any required contract, symbol, endpoint, data source, output path, or validation target is unclear, stop and ask. Do not guess.
 
+For [bounded corrections](../coordinator/references/execution-contract.md#bounded-corrections), the original assignment plus a follow-up defining the current candidate and delta is sufficient. Verify the applicable requirements; do not require a regenerated full prompt.
+
 ## Workflow
 
 1. Read context.
@@ -33,9 +35,10 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 
 2. Make a plan before implementation.
    - Use `update_plan` for non-trivial work.
+   - A bounded correction may use a short inline plan covering the edit and verification. Do not expand it into a separate planning artifact unless project instructions require one.
    - Keep exactly one step in progress.
    - Revise the plan when scope or findings change.
-   - Before the first edit, verify source workspace and backing Git metadata are persistent, not `/tmp`, memory-backed or automatically cleaned storage. Use the assigned workspace or suitable existing checkout; never move unique edits into a disposable build copy. When isolation needs a new location without an established convention/authorization, ask the parent (or user when standalone) to resolve it before creation. Nested worktree paths must be ignored and untracked in the containing repository and protected from broad cleanup. Keep new/untracked source and required evidence durable as produced; do not rely on transcripts or saving only at handoff.
+   - Before the first edit, establish source workspace and backing Git persistence under [Persistent Workspaces](../orchestrator/references/resource-lifecycle.md#persistent-workspaces), reusing recorded verification when it applies to the actual workspace and operations. Use the assigned workspace or suitable existing checkout; never move unique edits into a disposable build copy. When isolation needs a new location without an established convention/authorization, ask the parent (or user when standalone) to resolve it before creation. Nested worktree paths must be ignored and untracked in the containing repository and protected from broad cleanup. Keep new/untracked source and required evidence durable as produced; do not rely on transcripts or saving only at handoff.
    - Before creating environments/output, follow assigned [Artifact Placement](../orchestrator/references/resource-lifecycle.md#artifact-placement): verify in-repo generated paths are ignored and untracked, outside authored docs; keep authored source/reusable tests visible and required evidence persistent. Report conflicting assignment paths before populating them. Record workspace paths, purpose/owner and named consumers/release conditions, not every generated file. Check headroom before large allocations and reuse compatible environments only with intact isolation/candidate identity.
    - Coordinate large allocation starts with the parent and report completion/retained bytes; recheck after substantial allocations. Defaults unless explicitly overridden: below 5 GiB free report/serialize large allocations; 2 GiB or less pause write-heavy work and report a blocker. Admission must leave more than the critical reserve after combined remaining peak usage, not merely pass an independent free-space check. Outside orchestration, apply the same checks to known competing allocations and serialize when uncertain.
 
@@ -62,7 +65,8 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
    - Batch compatible independent checks, preserving each underlying operation's exit status and success/failure/timeout/cancellation/unexecuted result. Shared fixtures, ports, generated files or build destinations require sequencing unless isolation is established; respect candidate and allocation boundaries. Keep required full logs durable, return concise results and inspect failures. Filtering/parsing success or no matching error text does not establish a pass; surface incomplete output/parser failures and inspect raw evidence as needed.
    - Run the validation commands requested in the prompt when feasible.
    - Run targeted additional checks only when they directly reduce risk for the edited surface.
-   - For corrections, identify affected behavior/consumers and rerun affected checks. Reuse evidence only when the assignment permits it and relevant inputs still match; retain original limits. Rerun if applicability is uncertain. Never skip a required fresh check or broaden into unrelated matrices/harnesses.
+   - Apply [Bounded Corrections](../coordinator/references/execution-contract.md#bounded-corrections) to validation scope and completion. Rerun affected checks; reuse evidence only when permitted and relevant inputs still match, retaining original limits. Rerun if applicability is uncertain and preserve required fresh checks.
+   - Handle [Checking-Method Failures](../coordinator/references/execution-contract.md#checking-method-failures) within the assigned authority and test posture; preserve product findings and validation holds.
    - If a command must be adjusted, report the exact adjustment and why.
    - If validation cannot run, report the blocker clearly.
    - On critical disk space or disk-full/quota/inode errors, stop affected writes and safely halt owned write-heavy operations; report immediately, without retrying or deleting beyond the assigned cleanup scope. After safe headroom is restored, inspect incomplete outputs and rerun affected checks against the identified candidate. Preserve user pauses and recovery evidence.
@@ -108,6 +112,8 @@ Follow the prompt's stated test posture:
 - extend existing tests
 - add minimal local tests
 - or do not add a new test harness and rely on build/typecheck/targeted verification only
+
+For reversible, low-impact presentation corrections, prefer existing relevant checks and targeted rendered verification. Do not add tests that merely mirror the implementation, or introduce runner modes, generalized helpers or maintained harness features solely to document a one-off correction. Add durable regression coverage when required or when it protects meaningful behavior.
 
 Do not silently broaden the test strategy in a way that changes project structure or adds new dependencies. If the stated validation is insufficient for a discovered risk, explain the gap and either run a narrow existing check or ask before expanding the harness.
 

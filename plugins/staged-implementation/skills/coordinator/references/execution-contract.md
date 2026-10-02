@@ -62,7 +62,23 @@ Ordinary product fixes and directly necessary test maintenance retain their exis
 
 When local validation supports a later delivery gate, identify the project's maintained build invocation, working directory, relevant configuration/environment and generated-input steps, including version generation where applicable. Prefer that path within current authority. If isolation or the assigned validation level requires a different invocation, record the relevant differences and their implications for later evidence reuse before expensive execution. Carry this context in existing validation instructions; do not invent another build system or require premature delivery/device operations.
 
+Reuse an applicable maintained build artifact across local review and delivery where the release process permits. A role handoff alone is not a reason to rebuild. If rebuilding changes relevant inputs, revalidate the affected evidence.
+
 At the later gate, compare actual candidate/build inputs with the earlier evidence. Source equality alone does not prove equivalent generated assets, while metadata or output-name differences alone do not justify rerunning an entire matrix. Investigate meaningful differences and apply targeted review/validation plus required fresh gates. Existing evidence remains reusable where applicability is established; do not rebuild solely to manufacture byte identity.
+
+## Bounded Corrections
+
+For a correction with an established intended result, understood affected scope and no unresolved contract or authority question, default to a bounded follow-up within the existing assignment. Use the current candidate, applicable requirements, concrete defect, expected result, affected checks and completion condition. Do not recreate unchanged readiness assessments, prompts, environment audits or evidence packages. Existing assignment modes and ownership rules apply; no new classification form or approval step is needed.
+
+Determine validation from the affected behavior and credible regressions, not diff size alone. Identify sufficient checks before execution. Expand when review reveals affected consumers, uncertain evidence or an uncovered risk; briefly record the reason in the existing result. Shared, security-sensitive or deployment/recovery behavior can require substantial validation even for a one-line correction.
+
+Distinguish required acceptance outcomes and explicitly mandated methods from agent-selected checking methods. Where the method is not frozen, it may be adjusted within existing authority if the replacement provides equivalent coverage. Record the adjustment and its evidence limits; do not silently drop an obligation or relabel a required method as optional.
+
+Once actual-diff review, required independent validation and applicable acceptance conditions pass, complete the assignment. Additional preparation, reporting or exploratory checks need a concrete unresolved purpose. This does not change role ownership, authorize additional operations or waive required checks, user checkpoints or later gates. Preserve candidate identity, evidence and resource obligations in the existing result.
+
+### Checking-Method Failures
+
+Distinguish product failures from checking-method failures using observed evidence. Preserve the failed observation. Repair the narrow checking defect or use an authorized equivalent method that proves the same requirement, recording the substitution and its limits. Do not weaken assertions, bypass a mandated method or turn incidental automation repair into unrelated infrastructure work. A changed checking method does not itself establish that the product passed. Candidate or harness edits remain subject to writer ownership and validation holds.
 
 ## Execution and Acceptance
 
