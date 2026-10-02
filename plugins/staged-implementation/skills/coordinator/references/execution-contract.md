@@ -43,6 +43,27 @@ Use lowercase hexadecimal of the exact UTF-8 run/unit IDs (no slugification), `c
 
 Record logical assignment → submitted tool label → returned worker ID and immediate parent in the existing handoff/assignment record once. Check uniqueness in the tool's naming scope. If the tool cannot accept the encoding or has no label field, retain the logical identity and explicitly map the supported unique label (or absence of one) to the actual worker; never silently truncate, rename canonical IDs or assume an audit can infer the mapping. Labels identify assignments, not acceptance, completion or resource release. No extra status messages or telemetry journal are required.
 
+## Supporting Changes and Requirement Authority
+
+Distinguish explicit user/project requirements, engineering decisions made within delegated authority, and unresolved proposals or interpretations. Preserve the source and scope of material decisions in the existing assignment/handoff. Writing, approving internally or committing a planning amendment does not expand authority. An agent-selected mechanism does not become user-required merely because a plan calls it mandatory. Engineering discretion remains valid within its granted bounds; do not request user approval for every implementation choice.
+
+Before treating an unexpected prerequisite as a blocker or implementing an unplanned supporting change, establish the current need. A historical command, absent safeguard or preferred mechanism is not itself evidence of a defect. In a few sentences in the existing assignment/result, identify:
+
+- The approved requirement and applicable authority.
+- The concrete unmet need, failure or credible risk if existing behavior remains; do not reproduce a dangerous failure just to prove necessity.
+- Why the maintained workflow and existing preparations cannot satisfy the requirement, including whether preservation or other mitigation has already resolved the concern.
+- The smallest sufficient correction and its effects on other users, future runs, defaults and shared contracts. File count, diff size and repository location do not determine scope.
+
+For an unexpected prerequisite or supporting change outside the planned implementation that would alter shared operational policy or persistent tooling defaults, the orchestrator obtains a bounded necessity/scope challenge from the assignment's independent validator before implementation. Use the existing validator, or assign the chunk's validator early and reuse it for post-change validation; do not add another reviewer role. Supply original requirements, current evidence and the proposal, not the parent's necessity verdict as a premise. The validator may recommend dropping the mechanism, a narrower solution or authority clarification. Review findings do not authorize execution; the parent resolves scope/authority and retains the normal actual-diff review and independent post-change validation. Explicit delegation restrictions remain binding. This challenge must not delay an urgent safety hold or waive an explicit requirement.
+
+Ordinary product fixes and directly necessary test maintenance retain their existing review flow. Exercise already-granted supporting-change authority without file-only approval requests; this contract does not grant that authority or override explicit freezes. Drop unsupported mechanisms while preserving the underlying requirement. A genuine unresolved requirement or authority conflict holds affected work; continue independent work only within existing run/ready-subset authority and ownership rules. No new user checkpoint, duplicate report, repeated passing check or wider investigation follows merely from this section.
+
+## Build and Delivery Alignment
+
+When local validation supports a later delivery gate, identify the project's maintained build invocation, working directory, relevant configuration/environment and generated-input steps, including version generation where applicable. Prefer that path within current authority. If isolation or the assigned validation level requires a different invocation, record the relevant differences and their implications for later evidence reuse before expensive execution. Carry this context in existing validation instructions; do not invent another build system or require premature delivery/device operations.
+
+At the later gate, compare actual candidate/build inputs with the earlier evidence. Source equality alone does not prove equivalent generated assets, while metadata or output-name differences alone do not justify rerunning an entire matrix. Investigate meaningful differences and apply targeted review/validation plus required fresh gates. Existing evidence remains reusable where applicability is established; do not rebuild solely to manufacture byte identity.
+
 ## Execution and Acceptance
 
 The orchestrator reads the actual candidate and contracts, writes/reuses the scoped implementer prompt, reviews the actual diff and affected behavior, obtains independent validation where required, reconciles findings and decides chunk acceptance. No implementer self-acceptance or validator acceptance authority. Independence requires a separate validator assignment with authoritative requirements and candidate evidence, not adoption of the implementer's verdict. Required fresh challenges remain mandatory.

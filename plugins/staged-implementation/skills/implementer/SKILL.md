@@ -42,6 +42,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 3. Verify contracts before coding.
    - For contract-heavy chunks, verify an existing applicable checklist against authoritative MUSTs, invariants, exact fields, response shapes, event semantics, error mappings, persistence formats and non-goals. Reuse it when complete; add missing requirements or create one if none is suitable. An omitted invariant still applies. Share requirement IDs but keep this pass's findings/evidence separate from independent validation.
    - Treat those requirements as the acceptance checklist for the diff.
+   - Report unexpected prerequisites or supporting changes outside the assigned scope to the parent (user when standalone) under [Supporting Changes and Requirement Authority](../coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority), with the requirement, concrete need and wider effects. Do not silently add a safeguard or permanent tooling policy to satisfy a temporary restriction. Preserve routine engineering discretion within the assigned scope and authority without acknowledgement requests; hold only affected work when resolution is needed.
    - Do not use placeholders such as "same as today" for contract behavior in code or tests.
 
 4. Implement surgically.
@@ -57,6 +58,7 @@ The prompt should define scope, non-goals, requirements, invariants, validation,
 
 5. Validate.
    - Before expensive checks, preflight working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; reuse verified setup and recheck changed or uncertain assumptions. Derive intended assertions from frozen contracts and use source for implementation facts; investigate disagreement rather than making tests mirror a defect. Reuse applicable harness/verification helpers and candidate input records; create only the smallest missing helper when needed. Preflight does not replace behavioral tests.
+   - When this evidence supports delivery, follow [Build and Delivery Alignment](../coordinator/references/execution-contract.md#build-and-delivery-alignment); preserve the maintained invocation/context or explain intentional differences. Apply [Build Operations and Temporary Restrictions](../orchestrator/references/resource-lifecycle.md#build-operations-and-temporary-restrictions) to actual side effects without creating new build policy.
    - Batch compatible independent checks, preserving each underlying operation's exit status and success/failure/timeout/cancellation/unexecuted result. Shared fixtures, ports, generated files or build destinations require sequencing unless isolation is established; respect candidate and allocation boundaries. Keep required full logs durable, return concise results and inspect failures. Filtering/parsing success or no matching error text does not establish a pass; surface incomplete output/parser failures and inspect raw evidence as needed.
    - Run the validation commands requested in the prompt when feasible.
    - Run targeted additional checks only when they directly reduce risk for the edited surface.

@@ -6,11 +6,11 @@ Staged Implementation bundles five skills with two execution entry points:
 - `coordinator` schedules a longer run and dispatches fresh bounded orchestrators, verifying completion and managing shared resources.
 - `orchestrator` owns one assigned chunk/gate or named coherent group through actual-diff review, independent validation, corrections and authorized acceptance/commit.
 - `implementer` executes one scoped implementation prompt without widening the task.
-- `validator` verifies implemented behavior against the plan, prompt, checklist, review findings, or frozen contracts.
+- `validator` verifies implemented behavior against the plan, prompt, checklist, review findings, or frozen contracts, and provides the targeted pre-implementation necessity challenge for unexpected changes to shared operational policy or persistent tooling defaults.
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.3`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.4`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 
@@ -152,6 +152,8 @@ The [shared execution contract](skills/coordinator/references/execution-contract
 The orchestrator stays through same-chunk corrections. At a bounded result, it hands over ownership/resources in final results and retires descendant assignments. Coordinator verifies the handoff, then dispatches normally using supported explicit closure or automatic runtime reclamation. No post-completion retirement messages or per-assignment capacity probes are required. Actual capacity failures use the shared [bounded recovery procedure](skills/coordinator/references/execution-contract.md#worker-retirement-and-capacity); missing `close_agent` alone is not a blocker. Unresolved runtime failures hold the coordinated loop; direct/manual execution requires an explicit alternative, not silently weakened validation.
 
 The existing plan/checklist/prompt map and one live handoff remain authoritative. No new run database, duplicated transcript archive, standing reviewer, automatic model downgrade or automatic external runner is introduced. User pauses, commit policies and later device/integration/release gates remain binding. A result can be accepted uncommitted, committed but not integrated, or locally accepted with later gates pending; those states are not interchangeable.
+
+Apply [Supporting Changes and Requirement Authority](skills/coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority) to unexpected prerequisites: establish the original requirement and current need before prescribing a mechanism. Unplanned changes to shared operational policy or persistent tooling defaults receive a bounded pre-implementation challenge from the assignment's independent validator. Planning amendments cannot expand authority; ordinary authorized fixes keep their existing flow. Prefer maintained build commands, resolve relevant [temporary restrictions](skills/orchestrator/references/resource-lifecycle.md#build-operations-and-temporary-restrictions), and preserve [local-to-delivery build applicability](skills/coordinator/references/execution-contract.md#build-and-delivery-alignment). These rules use existing assignments/reviews without a new user checkpoint or report series.
 
 ## Lifecycle and Context Efficiency
 

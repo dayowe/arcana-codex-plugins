@@ -74,6 +74,7 @@ For each authorized ready unit within the assignment (validation-only gates need
 
 3. Write the implementer prompt.
    - Produce one surgical prompt for that chunk only.
+   - Apply [Supporting Changes and Requirement Authority](../coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority) when an unexpected prerequisite or supporting change emerges, including during corrections. Establish necessity before prescribing a mechanism; obtain the specified independent challenge before an unplanned change to shared operational policy or persistent tooling defaults. Reuse the existing assignment/result and ordinary review flow for routine fixes.
    - Give the pass a stable `Chunk ID`, `Assignment ID` and mode under **Run State and Worker Lifecycle**.
    - Save official prompts beside the companion plan/checklist unless the user requests another output path.
    - Re-read the saved prompt before delegating.

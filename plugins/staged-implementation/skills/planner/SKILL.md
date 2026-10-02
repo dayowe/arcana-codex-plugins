@@ -49,6 +49,7 @@ Use existing artifacts when they satisfy the requested step. A scoped update or 
 1. Prepare or read the plan.
    - Identify the design, contracts, invariants, and semantics that implementation must preserve.
    - Identify what must not be guessed during implementation.
+   - Apply [Supporting Changes and Requirement Authority](../coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority) to proposed prerequisites and amendments. Distinguish user/project requirements, authorized engineering decisions and unresolved proposals; a planning edit cannot create authority or turn an inherited mechanism into a requirement.
 
 2. Prepare or read the implementation checklist.
    - Split work into gates or chunks.
@@ -61,6 +62,7 @@ Use existing artifacts when they satisfy the requested step. A scoped update or 
 4. Run the implementation readiness audit.
    - Initially inspect every chunk in the plan, checklist and prompt map; subsequently verify changed scope and affected dependencies, broadening when shared contracts change or impact is uncertain.
    - Surface contract blockers, dependencies, environment blockers, and small decisions that should be frozen before prompting.
+   - For planned build operations, resolve relevant restrictions under [Build Operations and Temporary Restrictions](../orchestrator/references/resource-lifecycle.md#build-operations-and-temporary-restrictions). Use known commands/effects and existing authority; do not add a universal cleanup/installation questionnaire.
    - Resolve blockers on the intended implementation path; unrelated contract blockers require an explicitly authorized ready-subset run. Follow the readiness rules below for later engineering freezes.
 
 5. Choose the next chunk.
@@ -125,6 +127,8 @@ Give each artifact one job: plan = architecture/rationale; checklist = work/depe
 Efficiency changes organization and communication, not what must be understood, implemented or proven. Required correctness and acceptance obligations take priority over token savings; do not impose token/turn caps that force incomplete work.
 
 Design validation alongside chunk boundaries. Assign each obligation to the first gate that needs it: local implementation, integrated behavior, or actual platform/device/release. Record its target and prerequisites. Do not require later release evidence before a local chunk unless correctness or safe activation depends on it. An unavailable mandatory check remains pending at its assigned gate; emulation/local success cannot pass that gate.
+
+Where validation feeds a later delivery gate, carry the maintained invocation, working directory/configuration and generated-input steps into validation instructions under [Build and Delivery Alignment](../coordinator/references/execution-contract.md#build-and-delivery-alignment). Identify intentional differences and evidence-reuse implications without requiring premature release operations.
 
 Prefer existing tests/harnesses and the smallest validation surface that credibly proves the contract. Plan a cheap setup preflight before expensive validation: working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; subsequently recheck changed or uncertain assumptions. Intended test outcomes come from frozen contracts; source establishes implementation facts, not permission to copy a defect into the expected result. Investigate disagreement. Expand for shared-owner impact or newly found risk. Do not prescribe every appearance × viewport × state combination, another harness or another general review without a coverage need. Retain required integration/independent review and any explicitly mandated matrix or fresh run unless expressly amended.
 
