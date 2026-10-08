@@ -10,7 +10,7 @@ Staged Implementation bundles five skills with two execution entry points:
 
 Use this plugin when a feature or fix is too large or contract-heavy to handle as one open-ended coding pass.
 
-**Stable release: `0.2.6`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
+**Stable release: `0.2.7`.** The coordinated workflow is now the default on `master`. When upgrading from `0.1.5`, old whole-checklist launch prompts must explicitly select Coordinator; Orchestrator now owns bounded work. Normal execution requires no synthetic pilot, artificial implementation cycles or prior workflow-qualification report. Handle actual tool failures through bounded recovery without weakening required validation. Keep all roles on the same selected skill bundle.
 
 ## Plugin Structure
 

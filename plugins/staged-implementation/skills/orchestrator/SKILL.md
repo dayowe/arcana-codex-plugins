@@ -7,7 +7,7 @@ description: "Bounded staged implementation lead for one assigned chunk, validat
 
 ## Role
 
-Own the complete implementation/review/validation loop for the assigned boundary. Do not become the implementer unless the user explicitly asks for local implementation. Do not independently launch unrelated next chunks or run a whole checklist. Use `$coordinator` for run-wide execution; do not silently reinterpret an older whole-run orchestrator prompt as a bounded assignment.
+Own the complete implementation/review/validation loop for the assigned boundary. Do not become the implementer unless the user explicitly asks for local implementation. Direct maintenance of assigned descriptive records is part of this role under the shared correction rule. Do not independently launch unrelated next chunks or run a whole checklist. Use `$coordinator` for run-wide execution; do not silently reinterpret an older whole-run orchestrator prompt as a bounded assignment.
 
 Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. Read task-relevant instruction extensions they reference when their conditions apply, and pass applicable references into assignments. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
 
@@ -95,6 +95,7 @@ For each authorized ready unit within the assignment (validation-only gates need
    - Save or update review outcomes beside the companion plan/checklist when the run is maintaining staged workflow artifacts.
 
 6. Handle review outcome.
+   - Apply [Descriptive-Record Corrections](../coordinator/references/execution-contract.md#descriptive-record-corrections) before dispatching a correction pass; correct qualifying assigned records directly and check them against established authoritative evidence.
    - If contract ambiguity exists, hold the affected chunk and identify the exact missing decision; apply **Stopping Conditions** before continuing other work.
    - If implementation violates the prompt or frozen contracts and the docs are clear, write a surgical follow-up prompt.
    - Reuse the designated repair agent when continuity helps; if a fresh pass is safer, follow the replacement ownership-transfer procedure under **Run State and Worker Lifecycle** before permitting edits.
@@ -106,11 +107,11 @@ For each authorized ready unit within the assignment (validation-only gates need
    - Invoke `$validator` for feature acceptance, regression, contract, UI/browser, runtime, API, device, or integration evidence when a separate validation pass would reduce risk.
    - Give the validator the exact target, applicable frozen requirements, findings and evidence limits; avoid unrelated planning/history context.
    - Treat validator results as evidence for the orchestrator's acceptance decision, not as acceptance by themselves.
-   - Route fixable in-scope failures back through correction and revalidation in this assignment. Keep acceptance held; release validation writes/holds before repairs and preserve the original failed evidence. A failed test alone is not a blocked return requiring worker retirement.
+   - Apply the descriptive-record exception before routing failures through another pass. Route other fixable in-scope failures back through correction and revalidation in this assignment. Keep acceptance held; release validation writes/holds before repairs and preserve the original failed evidence. A failed test alone is not a blocked return requiring worker retirement.
 
 8. Accept the chunk.
    - Confirm required validation passed under the current recorded acceptance contract; handle explicit user-approved exceptions under **Commit Rules**, never as fabricated PASS evidence.
-   - Establish that candidate source/diff and relevant build still match the reviewed/validated identity, reusing verified continuity under the provenance rule below where applicable; changes invalidate affected evidence until reconciled and revalidated.
+   - Establish that candidate source/diff and relevant build still match the reviewed/validated identity, reusing verified continuity under the provenance rule below where applicable. Reconcile and revalidate evidence affected by source/input changes. For a qualifying descriptive-record correction, check the corrected record and update its recorded identity as needed; retain applicable build and behavioral evidence.
    - Confirm no out-of-scope work remains.
    - Apply the explicit commit policy.
    - Use the chunk's proposed commit message when acceptable; otherwise write a one-line commit message with the chunk ID prefix when one exists.
