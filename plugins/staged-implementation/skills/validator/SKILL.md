@@ -55,7 +55,7 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 ## Workflow
 
 1. Read context.
-   - Read project instructions first.
+   - Read project instructions first, including referenced instruction extensions when their task conditions apply.
    - Read the assigned requirements, relevant plan/checklist sections, prompt, findings and changed-surface context; expand when dependencies or applicability are unclear, not to repeat unrelated planning audits.
    - Independently verify any supplied checklist against authoritative requirements; reuse complete requirement IDs, add omissions or create a checklist only if needed. Check obligations outside it and keep this pass's findings/evidence attributable separately from implementer results.
    - Use targeted searches/relevant file sections and programmatic extraction from large logs/JSON; expand to full files/raw evidence whenever needed. Do not repeatedly load unchanged inventories, histories or successful logs merely to restate them.
@@ -63,6 +63,7 @@ Follow the assigned acceptance level: local implementation, integration, or actu
 
 2. Create a validation plan.
    - Independently assess whether the assigned checks cover the affected behavior and credible regressions. For [bounded corrections](../coordinator/references/execution-contract.md#bounded-corrections), use that list as the validation plan and add concrete omissions. Include negative, edge and contract cases when applicable; do not populate irrelevant categories or recreate an existing complete checklist.
+   - Apply [Proportionate Planning and Execution](../coordinator/references/execution-contract.md#proportionate-planning-and-execution) in this same pass: challenge material unnecessary mechanisms, checking effort and operator burden against accepted requirements and sufficient simpler alternatives. Report supported findings to the parent; do not invent criteria, waive an agreed gate or redesign the candidate. Distinguish delivery claims and evidence limits when assessing automated, runtime or physical coverage. Verify that consequential choices have an established requirement, applicable approval or delegated decision authority. Report missing authority to the parent; a successful behavioral check does not resolve it.
    - Identify tools to use: build/test commands, API calls, browser tools, logs, screenshots, device/runtime checks.
    - State any preconditions, such as running server, seeded data, credentials, hardware, or env vars.
    - Before expensive execution, cheaply verify working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; recheck changed or uncertain setup thereafter. Intended outcomes come from frozen contracts; source establishes implementation facts, not an oracle that may copy defects into assertions. Investigate disagreement. Reuse established harnesses and add only the smallest missing helper when justified; preflight is not behavioral validation.

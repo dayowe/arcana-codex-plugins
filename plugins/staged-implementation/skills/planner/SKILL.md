@@ -11,7 +11,7 @@ Act as the planner/reviewer for staged implementation work.
 
 Default to prompt-writing, scope control, staged review, documentation clarification, and next-chunk definition. Do not act as the implementer unless the user explicitly asks for implementation.
 
-Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
+Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. Read task-relevant instruction extensions they reference when their conditions apply, and pass applicable references into assignments. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
 
 Treat questions, observations, and suggestions as analysis-only unless the user explicitly asks for code, patches, or saved artifacts.
 
@@ -49,6 +49,7 @@ Use existing artifacts when they satisfy the requested step. A scoped update or 
 1. Prepare or read the plan.
    - Identify the design, contracts, invariants, and semantics that implementation must preserve.
    - Identify what must not be guessed during implementation.
+   - Apply [Proportionate Planning and Execution](../coordinator/references/execution-contract.md#proportionate-planning-and-execution) before choosing architecture, chunks or gates. Establish the accepted outcome and intended use; challenge substantial mechanisms and operator burdens against concrete needs and simpler options while preserving complete behavior and requested future preparation.
    - Apply [Supporting Changes and Requirement Authority](../coordinator/references/execution-contract.md#supporting-changes-and-requirement-authority) to proposed prerequisites and amendments. Distinguish user/project requirements, authorized engineering decisions and unresolved proposals; a planning edit cannot create authority or turn an inherited mechanism into a requirement.
 
 2. Prepare or read the implementation checklist.
@@ -63,7 +64,7 @@ Use existing artifacts when they satisfy the requested step. A scoped update or 
    - Initially inspect every chunk in the plan, checklist and prompt map; subsequently verify changed scope and affected dependencies, broadening when shared contracts change or impact is uncertain.
    - Surface contract blockers, dependencies, environment blockers, and small decisions that should be frozen before prompting.
    - For planned build operations, resolve relevant restrictions under [Build Operations and Temporary Restrictions](../orchestrator/references/resource-lifecycle.md#build-operations-and-temporary-restrictions). Use known commands/effects and existing authority; do not add a universal cleanup/installation questionnaire.
-   - Resolve blockers on the intended implementation path; unrelated contract blockers require an explicitly authorized ready-subset run. Follow the readiness rules below for later engineering freezes.
+   - Resolve blockers on the intended implementation path; apply [Independent Ready Work](../coordinator/references/execution-contract.md#independent-ready-work) to continuation already covered by run authority. Follow the readiness rules below for later engineering freezes.
 
 5. Choose the next chunk.
    - Pick one coherent behavioral, contract, or validation unit.
@@ -130,6 +131,8 @@ Efficiency changes organization and communication, not what must be understood, 
 
 Design validation alongside chunk boundaries. Assign each obligation to the first gate that needs it: local implementation, integrated behavior, or actual platform/device/release. Record its target and prerequisites. Do not require later release evidence before a local chunk unless correctness or safe activation depends on it. An unavailable mandatory check remains pending at its assigned gate; emulation/local success cannot pass that gate.
 
+Apply the shared proportionality rules to operator involvement and delivery claims. Identify needed installation, physical access, credentials or reference inputs early; batch compatible interventions and prepare concrete instructions when the reviewed implementation is available. Separate prototype, production and accuracy obligations where relevant, without inventing a qualification campaign or deferring evidence required by the current delivery. Reuse granted authority; record actual missing decisions instead of scheduling repeated consent for required operations already authorized.
+
 Where validation feeds a later delivery gate, carry the maintained invocation, working directory/configuration and generated-input steps into validation instructions under [Build and Delivery Alignment](../coordinator/references/execution-contract.md#build-and-delivery-alignment). Identify intentional differences and evidence-reuse implications without requiring premature release operations.
 
 Prefer existing tests/harnesses and the smallest validation surface that credibly proves the contract. Plan a cheap setup preflight before expensive validation: working directory/paths, tool versions, generated-input prerequisites and relevant file-type/symlink handling; subsequently recheck changed or uncertain assumptions. Intended test outcomes come from frozen contracts; source establishes implementation facts, not permission to copy a defect into the expected result. Investigate disagreement. Expand for shared-owner impact or newly found risk. Do not prescribe every appearance × viewport × state combination, another harness or another general review without a coverage need. Retain required integration/independent review and any explicitly mandated matrix or fresh run unless expressly amended.
@@ -193,19 +196,16 @@ For every non-ready or weakly-ready chunk, produce a decision ledger entry with:
 
 - chunk ID/name
 - exact missing decision, dependency, or environment blocker
-- why the implementer must not decide it
+- decision owner and why the item needs that owner or blocks dependent work
 - recommended default when the written docs support one
 - options and tradeoffs when the user must decide
 - plan/checklist/prompt-map updates required after the decision
 
 One shared blocker can name all affected chunks. Dependency-only holds need the missing predecessor and acceptance link, not a repeated options/decision essay.
 
-Before implementation starts, require one of these outcomes:
+Before writing or dispatching an implementation prompt, recover decisions already established by authoritative instructions. Settle only implementation details permitted by the shared decision-ownership rule; obtain the user's decision for unresolved choices outside that delegation. Record established or authorized decisions as required engineering freezes before dependent implementation. Hold unresolved chunks and their dependents. Under [Independent Ready Work](../coordinator/references/execution-contract.md#independent-ready-work), reuse run authority that already covers unaffected ready work; ask only when continuation falls outside it or conflicts with an explicit checkpoint.
 
-- contract blockers are resolved and the intended chunk's required engineering freezes are written into the authoritative artifacts
-- or the user explicitly authorizes starting only the `ready` subset while unrelated contract-blocked chunks remain held
-
-Schedule later mechanism freezes before their first dependent chunk, using actual predecessor code. Incomplete later implementation detail need not block independent ready work; investigate architectural feasibility and irreversible migration risks early. Never relabel an unresolved product/API contract as a routine engineering choice to bypass approval.
+Schedule later mechanism freezes before their first dependent chunk, using actual predecessor code. Apply the shared decision-ownership rule to remaining engineering details; a required freeze does not grant authority to choose an unresolved requirement. Incomplete later implementation detail need not block independent ready work; investigate architectural feasibility and irreversible migration risks early. Never relabel an unresolved product/API contract as a routine engineering choice to bypass approval.
 
 Do not treat dependency-pending chunks as contract-ambiguous unless a missing decision blocks their future prompt. Summarize actual blockers clearly. Each further experiment should identify the question and an observation that distinguishes mechanisms. If equivalent experiments cannot resolve it, report the blocker/decision and continue only independently authorized ready work.
 
@@ -217,7 +217,7 @@ Before writing the prompt:
 - use `git status --short` and relevant `git log --oneline` checks before claiming a chunk is next, landed, or ready for review
 - state which chunk you chose and why
 - verify readiness covers the intended chunk and current dependencies; update affected entries, or complete the initial audit if missing
-- do not write an execution prompt for a chunk affected by unresolved `blocked-by-contract-decision` or `needs-small-freeze-before-prompt` items; ready-subset authorization permits only unaffected ready chunks
+- do not write an execution prompt for a chunk affected by unresolved `blocked-by-contract-decision` or `needs-small-freeze-before-prompt` items; existing run or ready-subset authority permits only unaffected ready chunks
 - stop if an ambiguity blocks an implementer-quality prompt
 - include current-state context only to the extent needed for the implementer to execute the chunk without relying on prior chat memory
 

@@ -9,7 +9,7 @@ description: "Bounded staged implementation lead for one assigned chunk, validat
 
 Own the complete implementation/review/validation loop for the assigned boundary. Do not become the implementer unless the user explicitly asks for local implementation. Do not independently launch unrelated next chunks or run a whole checklist. Use `$coordinator` for run-wide execution; do not silently reinterpret an older whole-run orchestrator prompt as a bounded assignment.
 
-Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
+Resolve project-specific context from the active conversation, repository instructions, `AGENTS.md` or equivalent files, and the task packet supplied by the user. Read task-relevant instruction extensions they reference when their conditions apply, and pass applicable references into assignments. If project instructions require reading a context file before work, read it first. Do not hardcode repository names, product names, validation commands, document paths, or domain contracts.
 
 Read the shared [Execution Contract](../coordinator/references/execution-contract.md). In coordinated mode, the coordinator owns global scheduling/status and run-wide resources; you own chunk prompts, evidence, substantive acceptance and scoped commits. In direct mode, perform the needed run duties yourself only for the explicitly assigned chunk/group. A group names its IDs, order and stopping boundary and preserves individual gates/rollback points.
 
@@ -62,8 +62,8 @@ Before delegating implementation, run a readiness preflight:
    - Before initial implementation delegation, verify the reviewed planning package against its checkpoint and actual working files. If relevant planning changes remain uncommitted, honor an explicit uncommitted disposition or applicable planning-checkpoint authorization; otherwise finish applicable document checks, identify the exact files and proposed commit, and ask before proceeding. Planning-checkpoint permission and accepted-chunk commit permission are separate. Exclude unrelated changes; do not repeat a resolved checkpoint request or turn routine execution-status updates into a new planning checkpoint gate. Record the verified baseline, including relevant uncommitted inputs when explicitly allowed.
    - Reuse the run readiness audit and verify assigned entries and dependencies. If missing, perform the bounded readiness assessment before prompting; report any missing run-level audit to the coordinator rather than reconstructing the entire plan locally.
    - Classify affected entries as `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`; the coordinator owns global updates. Broaden investigation when a shared contract changes or applicability is uncertain.
-   - Surface missing contracts/freezes before dependent implementation. Hold affected work; ready-subset authority permits only unaffected assigned work, not picking a replacement chunk outside the boundary.
-   - Hold the affected chunk and dependents if a required engineering freeze cannot be resolved from written docs; apply **Stopping Conditions** to any independent continuation.
+   - Surface missing contracts/freezes before dependent implementation. Under [Independent Ready Work](../coordinator/references/execution-contract.md#independent-ready-work), existing assignment authority may cover unaffected ready members, never a replacement chunk outside the boundary.
+   - Apply the shared decision-ownership rule before settling engineering details or recording freezes. Hold affected implementation when a required decision lacks authority; apply **Stopping Conditions** to any independent continuation.
 
 For each authorized ready unit within the assignment (validation-only gates need no implementer):
 
@@ -89,6 +89,7 @@ For each authorized ready unit within the assignment (validation-only gates need
 5. Review the result.
    - Inspect the actual diff/worktree, not just the sub-agent summary.
    - Compare against the frozen plan, checklist, prompt, and declared scope.
+   - Apply [Proportionate Planning and Execution](../coordinator/references/execution-contract.md#proportionate-planning-and-execution) to mechanisms, validation and operator burden. Correct material unnecessary complexity within authority; propose amendments when agreed contracts would change. Use this review and the existing independent validation, without another review stage.
    - Verify the implementer's self-audit claims against the diff.
    - Lead review with findings ordered by severity.
    - Save or update review outcomes beside the companion plan/checklist when the run is maintaining staged workflow artifacts.
@@ -139,15 +140,12 @@ Record assigned chunks' readiness and notify the coordinator of affected outside
 - chunk ID/name
 - readiness classification: `ready`, `blocked-by-contract-decision`, `blocked-by-dependency`, `blocked-by-environment`, or `needs-small-freeze-before-prompt`
 - exact missing decision, dependency, or environment blocker
-- why an implementer must not decide it
+- decision owner and why the item needs that owner or blocks dependent work
 - recommended default when the written docs support one
 - options and tradeoffs when the user must decide
 - plan/checklist/prompt-map updates required after the decision
 
-Before implementation starts, require one of:
-
-- contract blockers are resolved and the intended chunk's required engineering freezes are recorded in authoritative artifacts
-- or the user explicitly authorizes a ready-subset run while unrelated contract-blocked chunks remain held
+Before writing or dispatching an implementation prompt, recover decisions already established by authoritative instructions. Settle only implementation details permitted by the shared decision-ownership rule; obtain the user's decision for unresolved choices outside that delegation. Record established or authorized decisions as required engineering freezes before dependent implementation. Hold unresolved chunks and their dependents. Apply [Independent Ready Work](../coordinator/references/execution-contract.md#independent-ready-work) to existing authority for unaffected ready members; ask only when continuation exceeds that authority or conflicts with an explicit checkpoint.
 
 Complete required mechanism freezes before dependent implementation. Report wider feasibility/contract risk to the coordinator; do not redesign unassigned phases. Do not spawn implementers for blocked chunks or let them decide missing parent-route, API, persistence, timebase, ownership or cleanup contracts.
 
@@ -365,7 +363,7 @@ Holding acceptance is distinct from ending the assignment. Fixable findings with
 
 Record the blocker and preserve held work/evidence. Continue only independently ready members of the explicit assignment under existing authority, after verifying they do not depend on held work or change validated inputs/shared state. Otherwise return the block and ownership to the coordinator; it may schedule another eligible chunk. Different filenames alone do not establish independence. Separate acceptance/commits from held work; when safe separation is unproven, hold the candidate too.
 
-Stop dispatch and propagate pauses/safety restrictions to descendants immediately when the user or authorized coordinator pauses/stops, authority is unresolved, or a global integrity issue prevents safe work. Preserve in-flight operation identity and report; interruption is not cancellation of transmitted hardware commands. Stop at the assignment boundary or when no safe assigned work remains. A chunk hold does not cancel the coordinator's run or waive a gate. Unresolved contract decisions still require explicit ready-subset authority for unaffected work.
+Stop dispatch and propagate pauses/safety restrictions to descendants immediately when the user or authorized coordinator pauses/stops, run-wide authority is unresolved, or a global integrity issue prevents safe work. Preserve in-flight operation identity and report; interruption is not cancellation of transmitted hardware commands. Stop at the assignment boundary or when no safe assigned work remains. A chunk hold does not cancel the coordinator's run or waive a gate; existing authority for independent ready work remains subject to its original limits.
 
 ## Final Response
 
